@@ -73,6 +73,16 @@ QWidget * vag_panel() {
                                             "Fulltime enable LKA without ACC engaged",
                                             ""
                                             ));
+  vag_list->addWidget(new ParamControl("IsVagFulltimeLkaDisableWithBlinker",
+                                            "  Disable Fulltime LKA with blinker",
+                                            "Disable Fulltime LKA with blinker",
+                                            ""
+                                            ));
+  vag_list->addWidget(new ParamControl("IsVagFulltimeLkaDisableWithBrake",
+                                            "  Disable Fulltime LKA with brake",
+                                            "Disable Fulltime LKA with brake",
+                                            ""
+                                            ));
 
   vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagDevelopModeEnabled",

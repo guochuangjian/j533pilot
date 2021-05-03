@@ -89,6 +89,8 @@ keys = {
   b"IsVagBlinkerEnabled": [TxType.PERSISTENT],
   b"IsVagBlindspotEnabled": [TxType.PERSISTENT],
   b"IsVagFulltimeLkaEnabled": [TxType.PERSISTENT],
+  b"IsVagFulltimeLkaDisableWithBlinker": [TxType.PERSISTENT],
+  b"IsVagFulltimeLkaDisableWithBrake": [TxType.PERSISTENT],
   b"IsVagDevelopModeEnabled": [TxType.PERSISTENT],
 }
 
