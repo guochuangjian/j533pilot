@@ -35,7 +35,7 @@ procs = [
   PythonProcess("updated", "selfdrive.updated", enabled=not PC, persistent=True),
   PythonProcess("uploader", "selfdrive.loggerd.uploader", persistent=True),
   #PONTEST SpeedCamera
-  PythonProcess("speedcamerad", "selfdrive.vag.speedcamerad"),
+  #PONTEST PythonProcess("speedcamerad", "selfdrive.vag.speedcamerad"),
 ]
 
 managed_processes = {p.name: p for p in procs}

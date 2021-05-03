@@ -45,19 +45,19 @@ GearShifter = car.CarState.GearShifter
 
 class SpeedCamera:
   def __init__(self):
-    printf("[PONTEST][speedcamerad.py][__init__()]")
+    print("[PONTEST][speedcamerad.py][__init__()]")
     #Read Database CSV
   
   def update_events(self):
-    printf("[PONTEST][speedcamerad.py][update_events()]")
+    print("[PONTEST][speedcamerad.py][update_events()]")
 
   def speedcamerad_thread(self):
-    printf("[PONTEST][speedcamerad.py][speedcamerad_thread()]")
+    print("[PONTEST][speedcamerad.py][speedcamerad_thread()]")
     while True:
       self.update_events()
 
 def main():
-  printf("[PONTEST][speedcamerad.py][main()]")
+  print("[PONTEST][speedcamerad.py][main()]")
   speedcamera = SpeedCamera()
   speedcamera.speedcamerad_thread()
 
