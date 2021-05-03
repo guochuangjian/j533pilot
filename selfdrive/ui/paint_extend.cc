@@ -212,6 +212,15 @@ void ui_draw_left_hud(UIState *s) {
 }
 
 void ui_draw_right_hud_infobox1(UIState *s) {
+  float d_rel = s->scene.lead_data[0].getDRel();
+  //float v_rel = s->scene.lead_data[0].getVRel();
+  char value[16];
+
+  snprintf(value, sizeof(value), "%.2f", d_rel);
+  ui_draw_hud_infobox(s, hud_right_1_x, hud_right_1_y, hud_right_1_w, hud_right_1_h,
+                            "Lead Dis", 40, COLOR_WHITE, NVG_ALIGN_CENTER,
+                            "", 72, COLOR_WHITE, NVG_ALIGN_CENTER,
+                            "M", 48, COLOR_WHITE, NVG_ALIGN_CENTER);
 }
 
 void ui_draw_right_hud_infobox2(UIState *s) {
@@ -372,7 +381,7 @@ void ui_draw_hud(UIState *s) {
     //ui_draw_top_hud(s);
     //ui_draw_bottom_hud(s);
     ui_draw_left_hud(s);
-    //ui_draw_right_hud(s);
+    ui_draw_right_hud(s);
   }
   if(IsVagDevelopModeEnabled) {
    ui_draw_infotext(s);
