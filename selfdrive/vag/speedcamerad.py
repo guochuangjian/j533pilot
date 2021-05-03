@@ -57,7 +57,7 @@ class SpeedCamera:
       self.rk.monitor_time()
       self.prof.display()
 
-def main(sm=None, pm=None, logcan=None):
+def main():
   printf("[PONTEST][speedcamerad.py][main()]")
   speedcamera = SpeedCamera()
   speedcamera.speedcamerad_thread()
