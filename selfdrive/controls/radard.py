@@ -164,7 +164,9 @@ class RadarD():
     radarState.radarErrors = list(rr.errors)
     radarState.carStateMonoTime = sm.logMonoTime['carState']
 
-    if enable_lead:
+    #PONTEST Lead car - Need add setting hook
+    #if enable_lead:
+    if True:
       if len(sm['modelV2'].leads) > 1:
         radarState.leadOne = get_lead(self.v_ego, self.ready, clusters, sm['modelV2'].leads[0], low_speed_override=True)
         radarState.leadTwo = get_lead(self.v_ego, self.ready, clusters, sm['modelV2'].leads[1], low_speed_override=False)
@@ -199,9 +201,6 @@ def radard_thread(sm=None, pm=None, can_sock=None):
 
   # TODO: always log leads once we can hide them conditionally
   enable_lead = CP.openpilotLongitudinalControl or not CP.radarOffCan
-  print("[PONTEST][radard.py][radard_thread()] CP.openpilotLongitudinalControl=", CP.openpilotLongitudinalControl)
-  print("[PONTEST][radard.py][radard_thread()] CP.radarOffCan=", CP.radarOffCan)
-  print("[PONTEST][radard.py][radard_thread()] enable_lead=", enable_lead)
 
   while 1:
     can_strings = messaging.drain_sock_raw(can_sock, wait_for_one=True)
