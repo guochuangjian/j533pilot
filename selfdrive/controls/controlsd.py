@@ -483,8 +483,12 @@ class Controls:
     #Pon Fulltime lka
     params = Params()
     is_vag_fulltime_lka_enabled = True if (params.get("IsVagFulltimeLkaEnabled", encoding='utf8') == "1") else False
+    is_vag_fulltime_lka_disabled_with_blinker = True if (params.get("IsVagFulltimeLkaDisableWithBlinker", encoding='utf8') == "1") else False
+    is_vag_fulltime_lka_disable_with_brake = True if (params.get("IsVagFulltimeLkaDisableWithBrake", encoding='utf8') == "1") else False
     CC.availableFulltimeLka = bool(CS.cruiseState.available \
                               and bool(is_vag_fulltime_lka_enabled) \
+                              and not bool(is_vag_fulltime_lka_disabled_with_blinker and (CS.leftBlinker or CS.rightBlinker)) \
+                              and not bool(is_vag_fulltime_lka_disable_with_brake and CS.brakePressed) \
                               and bool(bool(CS.gearShifter==GearShifter.drive) \
                               or bool(CS.gearShifter==GearShifter.sport) \
                               or bool(CS.gearShifter==GearShifter.manumatic)))
