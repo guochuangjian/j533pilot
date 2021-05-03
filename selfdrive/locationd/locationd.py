@@ -338,6 +338,7 @@ def locationd_thread(sm, pm, disabled_logs=None):
           'altitude': msg.liveLocationKalman.positionGeodetic.value[2],
         }
         params.put("LastGPSPosition", json.dumps(location))
+        print("[PONTEST][locationd.py][locationd_thread()] location=", location)
 
 
 def main(sm=None, pm=None):
