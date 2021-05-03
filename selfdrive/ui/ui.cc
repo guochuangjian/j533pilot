@@ -9,7 +9,7 @@
 #include "common/visionimg.h"
 #include "ui.hpp"
 #include "paint.hpp"
-#include "paint_extend.hpp"
+
 
 int write_param_float(float param, const char* param_name, bool persistent_param) {
   char s[16];
@@ -138,9 +138,6 @@ static void update_model(UIState *s, const cereal::ModelDataV2::Reader &model) {
   }
   max_idx = get_path_length_idx(model_position, max_distance);
   update_line_data(s, model_position, 0.5, 1.22, &scene.track_vertices, max_idx);
-
-  //PONTEST - draw lead car
-  ui_draw_lead_car(s, model);
 }
 
 static void update_sockets(UIState *s) {
@@ -180,8 +177,6 @@ static void update_sockets(UIState *s) {
   }
   if (sm.updated("modelV2")) {
     update_model(s, sm["modelV2"].getModelV2());
-    //PONTEST Lead car
-    ui_draw_lead_car(s, sm["modelV2"].getModelV2());
   }
   if (sm.updated("deviceState")) {
     scene.deviceState = sm["deviceState"].getDeviceState();
