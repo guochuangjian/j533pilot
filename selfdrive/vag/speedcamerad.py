@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import os
 import math
+import time
+import csv
 from cereal import car, log
+
 from common.numpy_fast import clip
 from common.realtime import sec_since_boot, config_realtime_process, Priority, Ratekeeper, DT_CTRL
 from common.profiler import Profiler
@@ -43,18 +46,45 @@ LaneChangeDirection = log.LateralPlan.LaneChangeDirection
 EventName = car.CarEvent.EventName
 GearShifter = car.CarState.GearShifter
 
+class MapPoint:
+  def __init__(self, Longitude, Latitude):
+    self.Longitude = Longitude
+    self.Latitude = Latitude
+
+class CameraMapPoint(MapPoint):
+  def __init__(self, Longitude, Latitude, Direct, SpeedLimit):
+    super().__init__(Longitude, Latitude)
+    self.Direct = Direct
+    self.SpeedLimit = SpeedLimit
+
+  def distance(self, MapPoint):
+    return MapPoint.Longitude - self.Longitude, MapPoint.Latitude - self.Latitude
+
 class SpeedCamera:
   def __init__(self):
     print("[PONTEST][speedcamerad.py][__init__()]")
-    #Read Database CSV
-  
+    self.gps = messaging.sub_sock('gpsLocationExternal')
+    self.SpeedCameraMapPointList = []
+    self.PassiveLatitudeList = []
+    self.NagtiveLatitudeList = []
+    self.PassiveLongitudeList = []
+    self.NagtiveLongitudeList = []
+
+    #with open('selfdrive/speedcamera_csv/NPA_TD1.csv', newline='') as csvfile:
+    #self.rows = csv.reader(csvfile)
+    #for row in rows:
+      #SpeedCameraMapPointList.append(CameraMapPoint(row[5], row[6], row[7], row[8]))
+      #print(row[5], row[6], row[7], row[8])
+
   def update_events(self):
     print("[PONTEST][speedcamerad.py][update_events()]")
+    print("[PONTEST][speedcamerad.py][update_events() latitude=]", self.gps.latitude, " longitude=", self.gps.longitude)
 
   def speedcamerad_thread(self):
-    print("[PONTEST][speedcamerad.py][speedcamerad_thread()]")
+    print("[PONTEST][speedcamerad.py][speedcamerad_thread()] self.gps")
     while True:
       self.update_events()
+      time.sleep(1)
 
 def main():
   print("[PONTEST][speedcamerad.py][main()]")
