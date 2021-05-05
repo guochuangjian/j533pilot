@@ -63,22 +63,26 @@ class CameraMapPoint(MapPoint):
 class SpeedCamera:
   def __init__(self):
     print("[PONTEST][speedcamerad.py][__init__()]")
-    self.gps = messaging.sub_sock('gpsLocationExternal')
-    self.SpeedCameraMapPointList = []
-    self.PassiveLatitudeList = []
-    self.NagtiveLatitudeList = []
-    self.PassiveLongitudeList = []
-    self.NagtiveLongitudeList = []
+    #self.gps = messaging.sub_sock('gpsLocationExternal')
+    #self.SpeedCameraMapPointList = []
+    #self.PassiveLatitudeList = []
+    #self.NagtiveLatitudeList = []
+    #self.PassiveLongitudeList = []
+    #self.NagtiveLongitudeList = []
+    path = '/data/openpilot/selfdrive/vag/speedcamera_csv/NPA_TD1.csv'
+    try:
+      f = open(path, 'r')
+      rows = csv.reader(f, delimiter=',')
+      for row in rows:
+        print(row)
+    except:
+      print('ERROR: can not found ' + path)
+      exit(1)
 
-    #with open('selfdrive/speedcamera_csv/NPA_TD1.csv', newline='') as csvfile:
-    #self.rows = csv.reader(csvfile)
-    #for row in rows:
-      #SpeedCameraMapPointList.append(CameraMapPoint(row[5], row[6], row[7], row[8]))
-      #print(row[5], row[6], row[7], row[8])
 
   def update_events(self):
     print("[PONTEST][speedcamerad.py][update_events()]")
-    print("[PONTEST][speedcamerad.py][update_events() latitude=]", self.gps.latitude, " longitude=", self.gps.longitude)
+    #print("[PONTEST][speedcamerad.py][update_events() latitude=]", self.gps.latitude, " longitude=", self.gps.longitude)
 
   def speedcamerad_thread(self):
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] self.gps")
