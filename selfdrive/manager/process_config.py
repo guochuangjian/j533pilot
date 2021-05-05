@@ -32,8 +32,8 @@ procs = [
   PythonProcess("thermald", "selfdrive.thermald.thermald", persistent=True),
   PythonProcess("timezoned", "selfdrive.timezoned", enabled=TICI, persistent=True),
   PythonProcess("tombstoned", "selfdrive.tombstoned", enabled=not PC, persistent=True),
-  PythonProcess("updated", "selfdrive.updated", enabled=not PC, persistent=True),
-  PythonProcess("uploader", "selfdrive.loggerd.uploader", persistent=True),
+  #PONTEST PythonProcess("updated", "selfdrive.updated", enabled=not PC, persistent=True),
+  #PONTEST PythonProcess("uploader", "selfdrive.loggerd.uploader", persistent=True),
   #PONTEST SpeedCamera
   PythonProcess("speedcamerad", "selfdrive.vag.speedcamerad", persistent=True),
 ]
