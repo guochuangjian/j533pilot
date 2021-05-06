@@ -3,6 +3,7 @@ import os
 import math
 import time
 import csv
+from decimal import Decimal
 from cereal import car, log
 
 from common.numpy_fast import clip
@@ -47,15 +48,16 @@ EventName = car.CarEvent.EventName
 GearShifter = car.CarState.GearShifter
 
 class MapPoint:
-  def __init__(self, Longitude, Latitude):
+  def __init__(self, Longitude, Latitude, Direct):
     self.Longitude = Longitude
     self.Latitude = Latitude
-
-class CameraMapPoint(MapPoint):
-  def __init__(self, Longitude, Latitude, Direct, SpeedLimit):
-    super().__init__(Longitude, Latitude)
     self.Direct = Direct
+
+class SpeedCameraMapPoint(MapPoint):
+  def __init__(self, Longitude, Latitude, Direct, SpeedLimit, RoadType):
+    super().__init__(Longitude, Latitude, Direct)
     self.SpeedLimit = SpeedLimit
+    self.RoadType = RoadType
 
   def distance(self, MapPoint):
     return MapPoint.Longitude - self.Longitude, MapPoint.Latitude - self.Latitude
@@ -64,20 +66,86 @@ class SpeedCamera:
   def __init__(self):
     print("[PONTEST][speedcamerad.py][__init__()]")
     #self.gps = messaging.sub_sock('gpsLocationExternal')
-    #self.SpeedCameraMapPointList = []
-    #self.PassiveLatitudeList = []
-    #self.NagtiveLatitudeList = []
-    #self.PassiveLongitudeList = []
-    #self.NagtiveLongitudeList = []
-    path = '/data/openpilot/selfdrive/vag/speedcamera_csv/NPA_TD1.csv'
+    self.VehicleMapPointList = []
+    self.SpeedCameraMapPointList = []
+    self.EList = []
+    self.WList = []
+    self.NList = []
+    self.SList = []
+
+    #Add speed camera map point
+    SpeedCamPath = '/data/openpilot/selfdrive/vag/speedcamera_csv/TaiwanSpeedCamera.csv'
     try:
-      f = open(path, 'r')
+      f = open(SpeedCamPath, 'r')
       rows = csv.reader(f, delimiter=',')
+      #print(time.ctime())
       for row in rows:
-        print(row)
+        self.SpeedCameraMapPointList.append(SpeedCameraMapPoint(row[0], row[1], row[2], row[3], row[4]))
+        #print(row[0], row[1], row[2], row[3], row[4])
+        #print("SpeedCameraMapPointList=", self.SpeedCameraMapPointList[-1].Longitude, \
+                                          #self.SpeedCameraMapPointList[-1].Latitude, \
+                                          #self.SpeedCameraMapPointList[-1].Direct, \
+                                          #self.SpeedCameraMapPointList[-1].SpeedLimit, \
+                                          #self.SpeedCameraMapPointList[-1].RoadType)
+      f.close()
+      #print(time.ctime())
     except:
-      print('ERROR: can not found ' + path)
+      print('ERROR: can not found ' + SpeedCamPath)
       exit(1)
+
+    #Add vehicle tracke data
+    VehiclePath = '/data/openpilot/selfdrive/vag/speedcamera_csv/GpsTrack.csv'
+    try:
+      fd = open(VehiclePath, 'r')
+      rows = csv.reader(fd, delimiter=',')
+      #print(time.ctime())
+      for row in rows:
+        if not self.VehicleMapPointList:
+          #print("VehicleMapPointList<=0")
+          self.VehicleMapPointList.append(MapPoint(row[0], row[1], ''))
+        else:
+          #print("VehicleMapPointList>0")
+          #print(row[0], self.VehicleMapPointList[-1].Longitude, row[1], self.VehicleMapPointList[-1].Latitude)
+          Longitude = Decimal(row[0]) - Decimal(self.VehicleMapPointList[-1].Longitude)
+          Latitude = Decimal(row[1]) - Decimal(self.VehicleMapPointList[-1].Latitude)
+          if abs(Longitude) > abs(Latitude):
+            if Longitude > 0:
+              #print("E")
+              self.VehicleMapPointList.append(MapPoint(row[0], row[1], 'E'))
+            else:
+              #print("W")
+              self.VehicleMapPointList.append(MapPoint(row[0], row[1], 'W'))
+
+          else:
+            if Latitude > 0:
+              #print("N")
+              self.VehicleMapPointList.append(MapPoint(row[0], row[1], 'N'))
+            else:
+              #print("S")
+              self.VehicleMapPointList.append(MapPoint(row[0], row[1], 'S'))
+
+        #print(row[0], row[1])
+        #print("VehicleMapPointList=", self.VehicleMapPointList[-1].Longitude, self.VehicleMapPointList[-1].Latitude, self.VehicleMapPointList[-1].Direct)
+
+      fd.close()
+      print(time.ctime())
+    except:
+      print('ERROR: can not found ' + VehiclePath)
+      exit(1)
+
+    #Sort SpeedCameraMapPointList
+    self.SpeedCameraMapPointList.sort(key = lambda s: s.Longitude)
+    self.SpeedCameraMapPointList.sort(key = lambda s: s.Latitude)
+    for item in self.SpeedCameraMapPointList:
+      print("item=", item.Longitude, \
+                     item.Latitude, \
+                     item.Direct, \
+                     item.SpeedLimit, \
+                     item.RoadType)
+
+
+    #Devide 4 list according to vehicle direct
+    #self.VehicleMapPointList[-1].Longitude, self.VehicleMapPointList[-1].Latitude
 
 
   def update_events(self):
