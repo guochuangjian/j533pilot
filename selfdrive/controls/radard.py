@@ -164,9 +164,7 @@ class RadarD():
     radarState.radarErrors = list(rr.errors)
     radarState.carStateMonoTime = sm.logMonoTime['carState']
 
-    #PONTEST Lead car - Need add setting hook
-    #if enable_lead:
-    if True:
+    if enable_lead:
       if len(sm['modelV2'].leads) > 1:
         radarState.leadOne = get_lead(self.v_ego, self.ready, clusters, sm['modelV2'].leads[0], low_speed_override=True)
         radarState.leadTwo = get_lead(self.v_ego, self.ready, clusters, sm['modelV2'].leads[1], low_speed_override=False)
@@ -199,8 +197,12 @@ def radard_thread(sm=None, pm=None, can_sock=None):
   rk = Ratekeeper(1.0 / CP.radarTimeStep, print_delay_threshold=None)
   RD = RadarD(CP.radarTimeStep, RI.delay)
 
+  # Pon Hook vag settings for Lead Car
+  params = Params()
+  is_vag_lead_car_enabled = True if (params.get("IsVagFulltimeLkaEnabled", encoding='utf8') == "1") else False
+
   # TODO: always log leads once we can hide them conditionally
-  enable_lead = CP.openpilotLongitudinalControl or not CP.radarOffCan
+  enable_lead = CP.openpilotLongitudinalControl or not CP.radarOffCan or is_vag_lead_car_enabled
 
   while 1:
     can_strings = messaging.drain_sock_raw(can_sock, wait_for_one=True)
