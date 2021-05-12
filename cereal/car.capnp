@@ -187,6 +187,9 @@ struct CarState {
   leftBlindspot @33 :Bool; # Is there something blocking the left lane change
   rightBlindspot @34 :Bool; # Is there something blocking the right lane change
 
+  # speed camera
+  speedCamera @37 :SpeedCamera;
+
   struct WheelSpeeds {
     # optional wheel speeds
     fl @0 :Float32;
@@ -235,6 +238,36 @@ struct CarState {
       setCruise @9;
       resumeCruise @10;
       gapAdjustCruise @11;
+    }
+  }
+
+  struct SpeedCamera {
+    speedCameraEnabled @0 :Bool;
+    saccEnabled @1 :Bool;
+    speedCameraMapPosition @2 :SpeedCameraMapPosition;
+
+    struct SpeedCameraMapPosition {
+      latitude @0 :Float32;
+      longitude @1 :Float32;
+      direct @2 :SpeedDirect;
+      speedLimitation @3 :Float32;
+      roadType @4 :RoadType;
+      vehicleDistance @5 :Float32;
+      vehicleTrackAngle @6 :Float32;
+
+      enum SpeedDirect {
+        n @0;
+        s @1;
+        e @2;
+        w @3;
+        d @4;
+      }
+
+      enum RoadType {
+        road @0;
+        freeway @1;
+        highway @2;
+      }
     }
   }
 
