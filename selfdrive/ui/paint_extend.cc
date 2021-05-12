@@ -4,7 +4,23 @@
 #include "ui.hpp"
 #include <math.h>
 
+//===== draw speed limit image
+void ui_draw_image2(const UIState *s, const Rect &r, const char *name, float alpha) {
+  nvgBeginPath(s->vg);
+  NVGpaint imgPaint = nvgImagePattern(s->vg, r.x, r.y, r.w, r.h, 0, s->images.at(name), alpha);
+  nvgRect(s->vg, r.x, r.y, r.w, r.h);
+  nvgFillPaint(s->vg, imgPaint);
+  nvgFill(s->vg);
+}
 
+static void ui_draw_speed_image(const UIState *s, int x, int y, int size, const char *image, NVGcolor color, float img_alpha, int img_y = 0) {
+  const int img_size = size * 1.5;
+  nvgBeginPath(s->vg);
+  nvgCircle(s->vg, x, y + (bdr_s * 1.5), size);
+  nvgFillColor(s->vg, color);
+  nvgFill(s->vg);
+  ui_draw_image2(s, {x - (img_size / 2), img_y ? img_y : y - (size / 4), img_size, img_size}, image, img_alpha);
+}
 //===== draw text =====
 void ui_draw_hud_text(UIState *s,
                         const int x,
@@ -339,18 +355,63 @@ void ui_draw_blindspot(UIState *s) {
   }
 }
 
+void ui_draw_speedcamera(UIState *s) {
+  char speedLimit[16];
+  char distance[16];
+
+  if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 25) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_25");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 30) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_30");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 40) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_40");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 50) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_50");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 60) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_60");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 70) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_70");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 80) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_80");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 90) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_90");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 100) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_100");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 110) {
+    snprintf(speedLimit, sizeof(speedLimit), "speed_limit_110");
+  }
+
+  if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 600) {
+    snprintf(distance, sizeof(distance), "500M");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 500) {
+    snprintf(distance, sizeof(distance), "400M");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 400) {
+    snprintf(distance, sizeof(distance), "300M");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 300) {
+    snprintf(distance, sizeof(distance), "200M");
+  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 200) {
+    snprintf(distance, sizeof(distance), "100M");
+  }
+
+  ui_draw_speed_image(s, 1250, 300, 100, speedLimit, nvgRGBA(0x0, 0x0, 0x0, 0xff), 1.0f, 300 - 25);
+  ui_draw_hud_text(s, 1250, 600, distance, 64, COLOR_YELLOW);
+
+}
+
 //===== draw hud =====
 void ui_draw_hud(UIState *s) {
   bool IsVagInfoboxEnabled;
   bool IsVagInfobarEnabled;
   bool IsVagBlinkerEnabled;
   bool IsVagBlindspotEnabled;
+  bool IsVagSpeedCameraEnabled;
   bool IsVagDevelopModeEnabled;
   
   read_param(&IsVagInfoboxEnabled, "IsVagInfoboxEnabled");
   read_param(&IsVagInfobarEnabled, "IsVagInfobarEnabled");
   read_param(&IsVagBlinkerEnabled, "IsVagBlinkerEnabled");
   read_param(&IsVagBlindspotEnabled, "IsVagBlindspotEnabled");
+  read_param(&IsVagSpeedCameraEnabled, "IsVagSpeedCameraEnabled");
   read_param(&IsVagDevelopModeEnabled, "IsVagDevelopModeEnabled");
   
   if(IsVagInfoboxEnabled) {
@@ -370,5 +431,8 @@ void ui_draw_hud(UIState *s) {
   }
   if(IsVagBlinkerEnabled) {
     ui_draw_blinker(s);
+  }
+  if(IsVagSpeedCameraEnabled) {
+    ui_draw_speedcamera(s);
   }
 }
