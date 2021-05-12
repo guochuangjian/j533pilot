@@ -5,12 +5,12 @@ import time
 import csv
 from decimal import Decimal
 from cereal import car, log
+import cereal.messaging as messaging
 
 from common.numpy_fast import clip
 from common.realtime import sec_since_boot, config_realtime_process, Priority, Ratekeeper, DT_CTRL
 from common.profiler import Profiler
 from common.params import Params, put_nonblocking
-import cereal.messaging as messaging
 from selfdrive.config import Conversions as CV
 from selfdrive.swaglog import cloudlog
 from selfdrive.boardd.boardd import can_list_to_can_capnp
@@ -194,10 +194,10 @@ class SpeedCamera:
   def calculate_position_angle(self, Distance1, Distance2, Distance3):
     #print("[PONTEST][speedcamerad.py][calculate_position_angle()]")
     #angle = (math.pow(Decimal(Distance2), 2) + math.pow(Decimal(Distance3), 2) - math.pow(Decimal(Distance1), 2)) / (2 * Decimal(Distance2) * Decimal(Distance3))
-    if Distance1 > 0 and Distance2 > 0 and Distance3 > 0:
-      angle = (math.pow(Decimal(Distance2), 2) + math.pow(Decimal(Distance3), 2) - math.pow(Decimal(Distance1), 2)) / (2 * (Distance2) * (Distance3))
+    if Distance2 > 0 and Distance3 > 0:
+      angle = math.degrees(math.acos((math.pow(Decimal(Distance2), 2) + math.pow(Decimal(Distance3), 2) - math.pow(Decimal(Distance1), 2)) / (2 * (Distance2) * (Distance3))))
     else:
-      angle = 0
+      angle = 361
     return angle
     
 
@@ -289,11 +289,10 @@ class SpeedCamera:
     for ConcentricLayer1Item in self.ConcentricLayer1PositionList:
       print("ConcentricLayer1Item=", ConcentricLayer1Item.Latitude, ConcentricLayer1Item.Longitude, ConcentricLayer1Item.Direct, ConcentricLayer1Item.SpeedLimit, ConcentricLayer1Item.RoadType, ConcentricLayer1Item.Distance, ConcentricLayer1Item.Angle)
 
-
-  def update_events(self):
-    #print("[PONTEST][speedcamerad.py][update_events()]")
+  def vehicle_track_simulate(self):
+    print("[PONTEST][speedcamerad.py][vehicle_track_simulate()]")
     if self.TestItemIndex < 1900:
-      print("[PONTEST][speedcamerad.py][update_events()] simulate start")
+      print("[PONTEST][speedcamerad.py][vehicle_track_simulate()] simulate start")
       self.TestItemIndex = self.TestItemIndex + 1
 
       if len(self.ConcentricLayer1PositionList) < 5:
@@ -304,17 +303,28 @@ class SpeedCamera:
       #for ConcentricLayer1Item in self.ConcentricLayer1PositionList:
       #  print("ConcentricLayer1Item=", self.TestItemIndex, self.VehicleMapPositionList[self.TestItemIndex].Latitude, self.VehicleMapPositionList[self.TestItemIndex].Longitude, ConcentricLayer1Item.Latitude, ConcentricLayer1Item.Longitude, ConcentricLayer1Item.Direct, ConcentricLayer1Item.SpeedLimit, ConcentricLayer1Item.RoadType, ConcentricLayer1Item.Distance)
       print("SpeedCamItem=", self.TestItemIndex, self.VehicleMapPositionList[self.TestItemIndex].Latitude, self.VehicleMapPositionList[self.TestItemIndex].Longitude, self.ConcentricLayer1PositionList[0].Latitude, self.ConcentricLayer1PositionList[0].Longitude, self.ConcentricLayer1PositionList[0].Direct, self.ConcentricLayer1PositionList[0].SpeedLimit, self.ConcentricLayer1PositionList[0].RoadType, self.ConcentricLayer1PositionList[0].Distance, self.ConcentricLayer1PositionList[0].Angle)
-      print("[PONTEST][speedcamerad.py][update_events()] simulate end")
+      print("[PONTEST][speedcamerad.py][vehicle_track_simulate()] simulate end")
+
+
+  def update_events(self, VehicleLatitude, VehicleLongitude, VehicleSpeed):
+    print("[PONTEST][speedcamerad.py][update_events()]", VehicleLatitude, VehicleLongitude, VehicleSpeed)
 
   def speedcamerad_thread(self):
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] self.gps")
+    location_sock = messaging.sub_sock('gpsLocationExternal')
+
     while True:
-      self.update_events()
-      #time.sleep(100)
+      location = messaging.recv_sock(location_sock)
+      location = (strip_deprecated_keys(location.gpsLocationExternal.to_dict()) if location else None)
+      if location:
+        print("location=", location.latitude, location.longitude, location.altitude, location.speed, location.timestamp, location.source)
+        self.update_events(location.latitude, location.longitude, location.speed)
+      time.sleep(100)
 
 def main():
   print("[PONTEST][speedcamerad.py][main()]")
   speedcamera = SpeedCamera()
+  speedcamera.vehicle_track_simulate()
   speedcamera.speedcamerad_thread()
 
 
