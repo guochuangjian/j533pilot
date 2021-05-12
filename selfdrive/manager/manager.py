@@ -48,6 +48,8 @@ def manager_init():
     ("IsVagFulltimeLkaEnabled", "0"),
     ("IsVagFulltimeLkaDisableWithBlinker", "0"),
     ("IsVagFulltimeLkaDisableWithBrake", "0"),
+    ("IsVagSpeedCameraEnabled", "0"),
+    ("IsVagSaccEnabled", "0"),
     ("IsVagDevelopModeEnabled", "0"),
   ]
 
