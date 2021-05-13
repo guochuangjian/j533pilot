@@ -359,37 +359,37 @@ void ui_draw_speedcamera(UIState *s) {
   char speedLimit[16];
   char distance[16];
 
-  if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 25) {
+  if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 25) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_25");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 30) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 30) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_30");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 40) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 40) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_40");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 50) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 50) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_50");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 60) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 60) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_60");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 70) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 70) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_70");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 80) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 80) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_80");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 90) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 90) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_90");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 100) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 100) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_100");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getSpeedLimitation() == 110) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 110) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_110");
   }
 
-  if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 600) {
+  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 600) {
     snprintf(distance, sizeof(distance), "500M");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 500) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 500) {
     snprintf(distance, sizeof(distance), "400M");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 400) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 400) {
     snprintf(distance, sizeof(distance), "300M");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 300) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 300) {
     snprintf(distance, sizeof(distance), "200M");
-  } else if(s->scene.car_state.getSpeedCamera().getSpeedCameraMapPosition().getVehicleDistance() < 200) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 200) {
     snprintf(distance, sizeof(distance), "100M");
   }
 

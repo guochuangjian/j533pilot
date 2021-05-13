@@ -1260,6 +1260,34 @@ struct ManagerState {
   }
 }
 
+struct SpeedCamera {
+  speedCameraMapPosition @0 :SpeedCameraMapPosition;
+
+  struct SpeedCameraMapPosition {
+    latitude @0 :Float32;
+    longitude @1 :Float32;
+    direct @2 :SpeedDirect;
+    speedLimitation @3 :Float32;
+    roadType @4 :RoadType;
+    vehicleDistance @5 :Float32;
+    vehicleTrackAngle @6 :Float32;
+
+    enum SpeedDirect {
+      n @0;
+      s @1;
+      e @2;
+      w @3;
+      d @4;
+    }
+
+    enum RoadType {
+      road @0;
+      freeway @1;
+      highway @2;
+    }
+  }
+}
+
 struct Event {
   logMonoTime @0 :UInt64;  # nanoseconds
   valid @67 :Bool = true;
@@ -1317,6 +1345,8 @@ struct Event {
     deviceState @6 :DeviceState;
     logMessage @18 :Text;
 
+    # speed camera
+    speedCamera @79 :SpeedCamera;
 
     # *********** debug ***********
     testJoystick @52 :Joystick;
