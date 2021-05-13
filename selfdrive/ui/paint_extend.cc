@@ -381,15 +381,15 @@ void ui_draw_speedcamera(UIState *s) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_110");
   }
 
-  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 600) {
+  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.6) {
     snprintf(distance, sizeof(distance), "500M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 500) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.5) {
     snprintf(distance, sizeof(distance), "400M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 400) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.4) {
     snprintf(distance, sizeof(distance), "300M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 300) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.3) {
     snprintf(distance, sizeof(distance), "200M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 200) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.2) {
     snprintf(distance, sizeof(distance), "100M");
   }
 
