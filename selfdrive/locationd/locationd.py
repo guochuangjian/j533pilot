@@ -183,7 +183,7 @@ class Localizer():
 
     self.last_gps_fix = current_time
 
-    print("[PONTEST][locationd.py][handle_gps()] time=", time.ctime(), log.latitude, log.longitude)
+    #print("[PONTEST][locationd.py][handle_gps()] time=", time.ctime(), log.latitude, log.longitude)
     self.converter = coord.LocalCoord.from_geodetic([log.latitude, log.longitude, log.altitude])
     ecef_pos = self.converter.ned2ecef([0, 0, 0])
     ecef_vel = self.converter.ned2ecef(np.array(log.vNED)) - ecef_pos
@@ -339,7 +339,7 @@ def locationd_thread(sm, pm, disabled_logs=None):
           'altitude': msg.liveLocationKalman.positionGeodetic.value[2],
         }
         params.put("LastGPSPosition", json.dumps(location))
-        print("[PONTEST][locationd.py][locationd_thread()] location=", location)
+        #print("[PONTEST][locationd.py][locationd_thread()] location=", location)
 
 
 def main(sm=None, pm=None):
