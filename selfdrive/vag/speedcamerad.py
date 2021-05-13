@@ -34,8 +34,8 @@ class SpeedCamera:
     self.ConcentricLayer2PositionList = [] #5~10km
     self.ConcentricLayer3PositionList = [] #over 10km
     self.TestItemIndex = 0
-    self.sm = messaging.SubMaster(['thermal'])
-    self.pm = messaging.PubMaster(['dragonConf'])
+    self.sm = messaging.SubMaster(['gpsLocationExternal'])
+    self.pm = messaging.PubMaster(['speedCamera'])
 
     #Add speed camera map position
     SpeedCamPath = '/data/openpilot/selfdrive/vag/speedcamera_csv/TaiwanSpeedCamera.csv'
@@ -168,7 +168,7 @@ class SpeedCamera:
 
 
   def recalculate_concentric_layer_all(self, VehicleLatitude, VehicleLongitude, VehicleSpeed):
-    print("[PONTEST][speedcamerad.py][recalculate_concentric_layer_all()]")
+    #print("[PONTEST][speedcamerad.py][recalculate_concentric_layer_all()]")
     try:
       for MapPositionItem in self.SpeedCameraMapPositionList:
         #print("test", self.VehicleMapPositionList[self.TestItemIndex].Latitude, \
@@ -225,7 +225,7 @@ class SpeedCamera:
 
 
   def recalculate_concentric_layer1(self, VehicleLatitude, VehicleLongitude, VehicleSpeed):
-    print("[PONTEST][speedcamerad.py][recalculate_concentric_layer1()]")
+    #print("[PONTEST][speedcamerad.py][recalculate_concentric_layer1()]")
     for ConcentricLayer1Item in self.ConcentricLayer1PositionList:
       distance2 = self.calculate_gps_radian_haversine_formula_distance(self.VehicleMapPositionList[self.TestItemIndex].Latitude, \
                                                                        self.VehicleMapPositionList[self.TestItemIndex].Longitude, \
@@ -257,7 +257,7 @@ class SpeedCamera:
     #  print("ConcentricLayer1Item=", ConcentricLayer1Item.Latitude, ConcentricLayer1Item.Longitude, ConcentricLayer1Item.Direct, ConcentricLayer1Item.SpeedLimit, ConcentricLayer1Item.RoadType, ConcentricLayer1Item.Distance, ConcentricLayer1Item.Angle)
 
   def update_events(self, VehicleLatitude, VehicleLongitude, VehicleSpeed):
-    print("[PONTEST][speedcamerad.py][update_events()]", VehicleLatitude, VehicleLongitude, VehicleSpeed)
+    #print("[PONTEST][speedcamerad.py][update_events()]", VehicleLatitude, VehicleLongitude, VehicleSpeed)
 
     if len(self.ConcentricLayer1PositionList) < 5:
       self.recalculate_concentric_layer_all(VehicleLatitude, VehicleLongitude, VehicleSpeed)
@@ -266,30 +266,62 @@ class SpeedCamera:
 
     #for ConcentricLayer1Item in self.ConcentricLayer1PositionList:
     #  print("ConcentricLayer1Item=", self.TestItemIndex, self.VehicleMapPositionList[self.TestItemIndex].Latitude, self.VehicleMapPositionList[self.TestItemIndex].Longitude, ConcentricLayer1Item.Latitude, ConcentricLayer1Item.Longitude, ConcentricLayer1Item.Direct, ConcentricLayer1Item.SpeedLimit, ConcentricLayer1Item.RoadType, ConcentricLayer1Item.Distance)
-    if (self.ConcentricLayer1PositionList[0].Distance < 0.5): # 50M
+    if (self.ConcentricLayer1PositionList[0].Distance < 0.5): # 500M
       print("SpeedCamItem=", VehicleLatitude, VehicleLongitude, self.ConcentricLayer1PositionList[0].Latitude, self.ConcentricLayer1PositionList[0].Longitude, self.ConcentricLayer1PositionList[0].Direct, self.ConcentricLayer1PositionList[0].SpeedLimit, self.ConcentricLayer1PositionList[0].RoadType, self.ConcentricLayer1PositionList[0].Distance, self.ConcentricLayer1PositionList[0].Angle)
+
+    sc_send = messaging.new_message('speedCamera')
+
+    #sc_send.speedCamera.speedCameraMapPosition.latitude = Decimal(self.ConcentricLayer1PositionList[0].Latitude)
+    #sc_send.speedCamera.speedCameraMapPosition.longitude = Decimal(self.ConcentricLayer1PositionList[0].Longitude)
+    #
+    #if (self.ConcentricLayer1PositionList[0].Direct == 'N'):
+    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.n
+    #elif (self.ConcentricLayer1PositionList[0].Direct == 'S'):
+    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.s
+    #elif (self.ConcentricLayer1PositionList[0].Direct == 'E'):
+    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.e
+    #elif (self.ConcentricLayer1PositionList[0].Direct == 'W'):
+    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.w
+    #elif (self.ConcentricLayer1PositionList[0].Direct == 'D'):
+    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.d
+    #else:
+    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.d
+    #
+    #sc_send.speedCamera.speedCameraMapPosition.speedLimitation = Decimal(self.ConcentricLayer1PositionList[0].SpeedLimit)
+    #
+    #if (self.ConcentricLayer1PositionList[0].RoadType == 'road'):
+    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.road
+    #elif (self.ConcentricLayer1PositionList[0].RoadType == 'freeway'):
+    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.freeway
+    #elif (self.ConcentricLayer1PositionList[0].RoadType == 'highway'):
+    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.highway
+    #else:
+    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.road
+    #
+    #sc_send.speedCamera.speedCameraMapPosition.vehicleDistance = Decimal(self.ConcentricLayer1PositionList[0].Distance)
+    #sc_send.speedCamera.speedCameraMapPosition.vehicleTrackAngle = Decimal(self.ConcentricLayer1PositionList[0].Angle)
+
+    #self.pm.send('speedCamera', sc_send)
 
 
   def speedcamerad_thread(self):
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()]")
 
+    #Simulate
+    #print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Simulate")
+    #while self.TestItemIndex < 1900:
+    #  self.TestItemIndex = self.TestItemIndex + 1
+    #  #print("[PONTEST][speedcamerad.py][speedcamerad_thread()] self.TestItemIndex=", self.TestItemIndex)
+    #  self.update_events(self.VehicleMapPositionList[self.TestItemIndex].Latitude, self.VehicleMapPositionList[self.TestItemIndex].Longitude, 50)
+
     #Real GPS data
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Real GPS data")
     location_sock = messaging.sub_sock('gpsLocationExternal')
-
     while True:
       location = messaging.recv_sock(location_sock)
       if location:
         print("[PONTEST][speedcamerad.py][speedcamerad_thread()] location=", location.gpsLocationExternal.latitude, location.gpsLocationExternal.longitude, location.gpsLocationExternal.altitude, location.gpsLocationExternal.speed, location.gpsLocationExternal.timestamp, location.gpsLocationExternal.source)
         self.update_events(location.gpsLocationExternal.latitude, location.gpsLocationExternal.longitude, location.gpsLocationExternal.speed)
-
-    #Simulate
-    #print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Simulate")
-    #while True:
-    #  if self.TestItemIndex < 1900:
-    #    self.TestItemIndex = self.TestItemIndex + 1
-    #    print("[PONTEST][speedcamerad.py][speedcamerad_thread()] self.TestItemIndex=", self.TestItemIndex)
-    #    self.update_events(self.VehicleMapPositionList[self.TestItemIndex].Latitude, self.VehicleMapPositionList[self.TestItemIndex].Longitude, 50)
 
       time.sleep(0.1) #100 ms
 

@@ -4,6 +4,7 @@
 #include "ui.hpp"
 #include <math.h>
 
+#if 0
 //===== draw speed limit image
 void ui_draw_image2(const UIState *s, const Rect &r, const char *name, float alpha) {
   nvgBeginPath(s->vg);
@@ -21,6 +22,7 @@ static void ui_draw_speed_image(const UIState *s, int x, int y, int size, const 
   nvgFill(s->vg);
   ui_draw_image2(s, {x - (img_size / 2), img_y ? img_y : y - (size / 4), img_size, img_size}, image, img_alpha);
 }
+#endif
 //===== draw text =====
 void ui_draw_hud_text(UIState *s,
                         const int x,
@@ -356,6 +358,7 @@ void ui_draw_blindspot(UIState *s) {
 }
 
 void ui_draw_speedcamera(UIState *s) {
+#if 0
   char speedLimit[16];
   char distance[16];
 
@@ -395,7 +398,7 @@ void ui_draw_speedcamera(UIState *s) {
 
   ui_draw_speed_image(s, 1250, 300, 100, speedLimit, nvgRGBA(0x0, 0x0, 0x0, 0xff), 1.0f, 300 - 25);
   ui_draw_hud_text(s, 1250, 600, distance, 64, COLOR_YELLOW);
-
+#endif
 }
 
 //===== draw hud =====

@@ -237,9 +237,11 @@ static void update_sockets(UIState *s) {
     scene.light_sensor = std::clamp<float>((1023.0 / 1757.0) * (1757.0 - camera_state.getIntegLines()) * (1.0 - gain), 0.0, 1023.0);
   }
 #endif
+#if 0
   if (sm.updated("speedCamera")) {
     scene.speed_camera = sm["speedCamera"].getSpeedCamera();
   }
+#endif
   scene.started = scene.deviceState.getStarted() || scene.driver_view;
 }
 
