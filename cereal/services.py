@@ -55,6 +55,7 @@ service_list = {
   "wideRoadCameraState": Service(8076, True, 20., 1),
   "modelV2": Service(8077, True, 20., 20),
   "managerState": Service(8078, True, 2., 1),
+  "speedCamera": Service(8079, True, 100., 100),
 
   "testModel": Service(8040, False, 0.),
   "testLiveLocation": Service(8045, False, 0.),

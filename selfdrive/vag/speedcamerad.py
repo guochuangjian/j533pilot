@@ -8,6 +8,8 @@ from decimal import Decimal
 from cereal import car, log
 import cereal.messaging as messaging
 
+SpeedDirect = log.SpeedCamera.SpeedCameraMapPosition.SpeedDirect
+RoadType = log.SpeedCamera.SpeedCameraMapPosition.RoadType
 
 class MapPosition:
   def __init__(self, Latitude, Longitude, Direct):
@@ -17,10 +19,10 @@ class MapPosition:
 
 
 class SpeedCameraMapPosition(MapPosition):
-  def __init__(self, Latitude, Longitude, Direct, SpeedLimit, RoadType, Distance=-1, Angle=-1):
+  def __init__(self, Latitude, Longitude, Direct, SpeedLimit, Type, Distance=-1, Angle=-1):
     super().__init__(Latitude, Longitude, Direct)
     self.SpeedLimit = SpeedLimit
-    self.RoadType = RoadType
+    self.RoadType = Type
     self.Distance = Distance
     self.Angle = Angle
 
@@ -266,42 +268,39 @@ class SpeedCamera:
 
     #for ConcentricLayer1Item in self.ConcentricLayer1PositionList:
     #  print("ConcentricLayer1Item=", self.TestItemIndex, self.VehicleMapPositionList[self.TestItemIndex].Latitude, self.VehicleMapPositionList[self.TestItemIndex].Longitude, ConcentricLayer1Item.Latitude, ConcentricLayer1Item.Longitude, ConcentricLayer1Item.Direct, ConcentricLayer1Item.SpeedLimit, ConcentricLayer1Item.RoadType, ConcentricLayer1Item.Distance)
-    if (self.ConcentricLayer1PositionList[0].Distance < 0.5): # 500M
+    if (self.ConcentricLayer1PositionList[0].Distance < 0.05): # 500M
       print("SpeedCamItem=", VehicleLatitude, VehicleLongitude, self.ConcentricLayer1PositionList[0].Latitude, self.ConcentricLayer1PositionList[0].Longitude, self.ConcentricLayer1PositionList[0].Direct, self.ConcentricLayer1PositionList[0].SpeedLimit, self.ConcentricLayer1PositionList[0].RoadType, self.ConcentricLayer1PositionList[0].Distance, self.ConcentricLayer1PositionList[0].Angle)
 
     sc_send = messaging.new_message('speedCamera')
+    sc_send.speedCamera.speedCameraMapPosition.latitude = float(self.ConcentricLayer1PositionList[0].Latitude) + 0
+    sc_send.speedCamera.speedCameraMapPosition.longitude = float(self.ConcentricLayer1PositionList[0].Longitude)
+    if (self.ConcentricLayer1PositionList[0].Direct == 'N'):
+      sc_send.speedCamera.speedCameraMapPosition.direct = SpeedDirect.n
+    elif (self.ConcentricLayer1PositionList[0].Direct == 'S'):
+      sc_send.speedCamera.speedCameraMapPosition.direct = SpeedDirect.s
+    elif (self.ConcentricLayer1PositionList[0].Direct == 'E'):
+      sc_send.speedCamera.speedCameraMapPosition.direct = SpeedDirect.e
+    elif (self.ConcentricLayer1PositionList[0].Direct == 'W'):
+      sc_send.speedCamera.speedCameraMapPosition.direct = SpeedDirect.w
+    elif (self.ConcentricLayer1PositionList[0].Direct == 'D'):
+      sc_send.speedCamera.speedCameraMapPosition.direct = SpeedDirect.d
+    else:
+      sc_send.speedCamera.speedCameraMapPosition.direct = SpeedDirect.d
 
-    #sc_send.speedCamera.speedCameraMapPosition.latitude = Decimal(self.ConcentricLayer1PositionList[0].Latitude)
-    #sc_send.speedCamera.speedCameraMapPosition.longitude = Decimal(self.ConcentricLayer1PositionList[0].Longitude)
-    #
-    #if (self.ConcentricLayer1PositionList[0].Direct == 'N'):
-    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.n
-    #elif (self.ConcentricLayer1PositionList[0].Direct == 'S'):
-    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.s
-    #elif (self.ConcentricLayer1PositionList[0].Direct == 'E'):
-    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.e
-    #elif (self.ConcentricLayer1PositionList[0].Direct == 'W'):
-    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.w
-    #elif (self.ConcentricLayer1PositionList[0].Direct == 'D'):
-    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.d
-    #else:
-    #  sc_send.speedCamera.speedCameraMapPosition.direct = sc_send.speedCamera.speedCameraMapPosition.direct.d
-    #
-    #sc_send.speedCamera.speedCameraMapPosition.speedLimitation = Decimal(self.ConcentricLayer1PositionList[0].SpeedLimit)
-    #
-    #if (self.ConcentricLayer1PositionList[0].RoadType == 'road'):
-    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.road
-    #elif (self.ConcentricLayer1PositionList[0].RoadType == 'freeway'):
-    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.freeway
-    #elif (self.ConcentricLayer1PositionList[0].RoadType == 'highway'):
-    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.highway
-    #else:
-    #  sc_send.speedCamera.speedCameraMapPosition.roadType = sc_send.speedCamera.speedCameraMapPosition.roadType.road
-    #
-    #sc_send.speedCamera.speedCameraMapPosition.vehicleDistance = Decimal(self.ConcentricLayer1PositionList[0].Distance)
-    #sc_send.speedCamera.speedCameraMapPosition.vehicleTrackAngle = Decimal(self.ConcentricLayer1PositionList[0].Angle)
+    sc_send.speedCamera.speedCameraMapPosition.speedLimitation = float(self.ConcentricLayer1PositionList[0].SpeedLimit)
+    if (self.ConcentricLayer1PositionList[0].RoadType == 'road'):
+      sc_send.speedCamera.speedCameraMapPosition.roadType = RoadType.road
+    elif (self.ConcentricLayer1PositionList[0].RoadType == 'freeway'):
+      sc_send.speedCamera.speedCameraMapPosition.roadType = RoadType.freeway
+    elif (self.ConcentricLayer1PositionList[0].RoadType == 'highway'):
+      sc_send.speedCamera.speedCameraMapPosition.roadType = RoadType.highway
+    else:
+      sc_send.speedCamera.speedCameraMapPosition.roadType = RoadType.road
 
-    #self.pm.send('speedCamera', sc_send)
+    sc_send.speedCamera.speedCameraMapPosition.vehicleDistance = float(self.ConcentricLayer1PositionList[0].Distance)
+    sc_send.speedCamera.speedCameraMapPosition.vehicleTrackAngle = float(self.ConcentricLayer1PositionList[0].Angle)
+
+    self.pm.send('speedCamera', sc_send)
 
 
   def speedcamerad_thread(self):

@@ -4,7 +4,8 @@
 #include "ui.hpp"
 #include <math.h>
 
-#if 0
+#define DEVELOP_SACC 1
+#if DEVELOP_SACC //PONTEST
 //===== draw speed limit image
 void ui_draw_image2(const UIState *s, const Rect &r, const char *name, float alpha) {
   nvgBeginPath(s->vg);
@@ -358,29 +359,29 @@ void ui_draw_blindspot(UIState *s) {
 }
 
 void ui_draw_speedcamera(UIState *s) {
-#if 0
+#if DEVELOP_SACC //PONTEST
   char speedLimit[16];
   char distance[16];
 
-  if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 25) {
+  if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 25.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_25");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 30) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 30.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_30");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 40) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 40.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_40");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 50) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 50.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_50");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 60) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 60.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_60");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 70) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 70.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_70");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 80) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 80.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_80");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 90) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 90.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_90");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 100) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 100.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_100");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 110) {
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 110.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_110");
   }
 
@@ -396,8 +397,11 @@ void ui_draw_speedcamera(UIState *s) {
     snprintf(distance, sizeof(distance), "100M");
   }
 
-  ui_draw_speed_image(s, 1250, 300, 100, speedLimit, nvgRGBA(0x0, 0x0, 0x0, 0xff), 1.0f, 300 - 25);
-  ui_draw_hud_text(s, 1250, 600, distance, 64, COLOR_YELLOW);
+  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.6 && s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() != 0) {
+    ui_draw_speed_image(s, 1650, 700, 100, speedLimit, nvgRGBA(0x0, 0x0, 0x0, 0xff), 1.0f, 300 - 25);
+    ui_draw_hud_text(s, 1650, 700, distance, 64, COLOR_YELLOW);
+  }
+
 #endif
 }
 
