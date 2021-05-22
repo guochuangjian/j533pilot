@@ -4,6 +4,7 @@ import math
 import time
 import csv
 import sys
+from common.params import Params, put_nonblocking
 from decimal import Decimal
 from cereal import car, log
 import cereal.messaging as messaging
@@ -32,7 +33,7 @@ class SpeedCamera:
     print("[PONTEST][speedcamerad.py][__init__()]")
     self.VehiclePreviousLatitude = (360.1)
     self.VehiclePreviousLongitude = (360.1)
-    self.VehiclePreviousSpeedCameraDistance = 0;
+    self.VehiclePreviousSpeedCameraDistance = 0
     self.VehicleToCameraDirect = SpeedDirect.u
     self.SpeedCameraDetected = False
     self.VehicleMapPositionList = []
@@ -275,6 +276,7 @@ class SpeedCamera:
         sc_send.speedCamera.vehicleLatitude = float(VehicleLatitude)
         sc_send.speedCamera.vehicleLongitude = float(VehicleLongitude)
         sc_send.speedCamera.vehicleSpeed = float(VehicleSpeed)
+        Item = Item + 1
         if self.SpeedCameraDetected == True:
           break
       else:
@@ -283,7 +285,6 @@ class SpeedCamera:
     self.VehiclePreviousLatitude = VehicleLatitude
     self.VehiclePreviousLongitude = VehicleLongitude
     self.VehiclePreviousSpeedCameraDistance = ConcentricLayer1Item.Distance
-    Item = Item + 1
 
 
   def speedcamerad_thread(self):
@@ -298,26 +299,31 @@ class SpeedCamera:
         self.VehicleTrackIndex = self.VehicleTrackIndex + 1
       else:
         print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Simulate Reset")
-        break;
+        break
       time.sleep(0.1) #100 ms
 
     #Real GPS data
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Real GPS data")
+    params = Params()
+    IsVagSpeedCameraEnabled = True if (params.get("IsVagSpeedCameraEnabled", encoding='utf8') == "1") else False
     location_sock = messaging.sub_sock('gpsLocationExternal')
     while True:
-      location = messaging.recv_sock(location_sock)
-      if location:
-        print("[PONTEST][speedcamerad.py][speedcamerad_thread()] location=", \
-                location.gpsLocationExternal.latitude, \
-                location.gpsLocationExternal.longitude, \
-                location.gpsLocationExternal.altitude, \
-                location.gpsLocationExternal.speed, \
-                location.gpsLocationExternal.timestamp, \
-                location.gpsLocationExternal.source)
-        self.update_events(location.gpsLocationExternal.latitude, \
-                           location.gpsLocationExternal.longitude, \
-                           location.gpsLocationExternal.speed)
-      self.VehicleTrackIndex = self.VehicleTrackIndex + 1
+      if IsVagSpeedCameraEnabled == True:
+        location = messaging.recv_sock(location_sock)
+        if location:
+          print("[PONTEST][speedcamerad.py][speedcamerad_thread()] location=", \
+                  location.gpsLocationExternal.latitude, \
+                  location.gpsLocationExternal.longitude, \
+                  location.gpsLocationExternal.altitude, \
+                  location.gpsLocationExternal.speed, \
+                  location.gpsLocationExternal.timestamp, \
+                  location.gpsLocationExternal.source)
+          self.update_events(location.gpsLocationExternal.latitude, \
+                             location.gpsLocationExternal.longitude, \
+                             location.gpsLocationExternal.speed)
+        self.VehicleTrackIndex = self.VehicleTrackIndex + 1
+      else:
+        print("[PONTEST][speedcamerad.py][speedcamerad_thread()] SpeedCam Disabled")
       time.sleep(0.5) #500 ms
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] end")
 
