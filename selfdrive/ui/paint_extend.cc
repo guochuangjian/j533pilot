@@ -348,6 +348,7 @@ void ui_draw_blindspot(UIState *s) {
   }
 }
 
+static bool PreviousSpeedCameraDetected = false;
 void ui_draw_speedcamera(UIState *s) {
 #if DEVELOP_SACC //PONTEST
   char speedLimit[16];
@@ -412,8 +413,11 @@ void ui_draw_speedcamera(UIState *s) {
   if(s->scene.speed_camera.getSpeedCameraDetected()) {
     ui_draw_speed_image(s, 1650, 500, 200, 200, speedLimit);
     ui_draw_hud_text(s, 1700, 700, distance, 64, COLOR_YELLOW);
+    if(PreviousSpeedCameraDetected == false) {
+      s->sound->play(cereal::CarControl::HUDControl::AudibleAlert(4));
+    }
   }
-
+  PreviousSpeedCameraDetected = s->scene.speed_camera.getSpeedCameraDetected();
 #endif
 }
 
