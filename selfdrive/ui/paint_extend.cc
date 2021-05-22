@@ -6,22 +6,12 @@
 
 #define DEVELOP_SACC 1
 #if DEVELOP_SACC //PONTEST
-//===== draw speed limit image
-void ui_draw_image2(const UIState *s, const Rect &r, const char *name, float alpha) {
+void ui_draw_speed_image(const UIState *s, int x, int y, int w, int h, const char *name) {
   nvgBeginPath(s->vg);
-  NVGpaint imgPaint = nvgImagePattern(s->vg, r.x, r.y, r.w, r.h, 0, s->images.at(name), alpha);
-  nvgRect(s->vg, r.x, r.y, r.w, r.h);
+  NVGpaint imgPaint = nvgImagePattern(s->vg, x, y, w, h, 0, s->images.at(name), 1.0f);
+  nvgRect(s->vg, x, y, w, h);
   nvgFillPaint(s->vg, imgPaint);
   nvgFill(s->vg);
-}
-
-static void ui_draw_speed_image(const UIState *s, int x, int y, int size, const char *image, NVGcolor color, float img_alpha, int img_y = 0) {
-  const int img_size = size * 1.5;
-  nvgBeginPath(s->vg);
-  nvgCircle(s->vg, x, y + (bdr_s * 1.5), size);
-  nvgFillColor(s->vg, color);
-  nvgFill(s->vg);
-  ui_draw_image2(s, {x - (img_size / 2), img_y ? img_y : y - (size / 4), img_size, img_size}, image, img_alpha);
 }
 #endif
 //===== draw text =====
@@ -363,6 +353,28 @@ void ui_draw_speedcamera(UIState *s) {
   char speedLimit[16];
   char distance[16];
 
+  char value[64];
+  int sidebar_fit_x = 0;
+  //Fit sidebar screen
+  sidebar_fit_x = s->viz_rect.x + hud_left_2_x;
+  snprintf(value, sizeof(value), "Distance=%f, Angle=%f, VDirect=%d, SDirect=%d", \
+           s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance(), \
+           s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleTrackAngle(), \
+           (int) s->scene.speed_camera.getVehicleDirect(), \
+           (int) s->scene.speed_camera.getSpeedCameraMapPosition().getDirect());
+  ui_draw_hud_text(s, sidebar_fit_x, 5, value, 64, COLOR_YELLOW);
+
+  snprintf(value, sizeof(value), "V latitude=%f, longitude=%f", \
+           s->scene.speed_camera.getVehicleLatitude(), \
+           s->scene.speed_camera.getVehicleLongitude());
+  ui_draw_hud_text(s, sidebar_fit_x, 800, value, 80, COLOR_YELLOW);
+
+  snprintf(value, sizeof(value), "C latitude=%f, longitude=%f", \
+           s->scene.speed_camera.getSpeedCameraMapPosition().getLatitude(), \
+           s->scene.speed_camera.getSpeedCameraMapPosition().getLongitude());
+  ui_draw_hud_text(s, sidebar_fit_x, 900, value, 80, COLOR_YELLOW);
+
+
   if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 25.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_25");
   } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 30.0) {
@@ -385,21 +397,21 @@ void ui_draw_speedcamera(UIState *s) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_110");
   }
 
-  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.6) {
-    snprintf(distance, sizeof(distance), "500M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.5) {
-    snprintf(distance, sizeof(distance), "400M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.4) {
-    snprintf(distance, sizeof(distance), "300M");
+  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.2) {
+    snprintf(distance, sizeof(distance), "100M");
   } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.3) {
     snprintf(distance, sizeof(distance), "200M");
-  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.2) {
-    snprintf(distance, sizeof(distance), "100M");
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.4) {
+    snprintf(distance, sizeof(distance), "300M");
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.5) {
+    snprintf(distance, sizeof(distance), "400M");
+  } else if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.6) {
+    snprintf(distance, sizeof(distance), "500M");
   }
 
-  if(s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() < 0.6 && s->scene.speed_camera.getSpeedCameraMapPosition().getVehicleDistance() != 0) {
-    ui_draw_speed_image(s, 1650, 700, 100, speedLimit, nvgRGBA(0x0, 0x0, 0x0, 0xff), 1.0f, 300 - 25);
-    ui_draw_hud_text(s, 1650, 700, distance, 64, COLOR_YELLOW);
+  if(s->scene.speed_camera.getSpeedCameraDetected()) {
+    ui_draw_speed_image(s, 1650, 500, 200, 200, speedLimit);
+    ui_draw_hud_text(s, 1700, 700, distance, 64, COLOR_YELLOW);
   }
 
 #endif

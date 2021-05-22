@@ -1261,7 +1261,26 @@ struct ManagerState {
 }
 
 struct SpeedCamera {
-  speedCameraMapPosition @0 :SpeedCameraMapPosition;
+  vehicleLatitude @0 :Float32;
+  vehicleLongitude @1 :Float32;
+  vehicleSpeed @2 :Float32;
+  vehicleDirect @3 :SpeedDirect;
+  vihicleToCameraDirect @4 :SpeedDirect;
+  speedCameraDetected @5 :Bool;
+  speedCameraMapPosition @6 :SpeedCameraMapPosition;
+
+  enum SpeedDirect {
+    n @0; #northern
+    s @1; #southern
+    e @2; #eastern
+    w @3; #western
+    d @4; #double
+    ne @5; #N+E
+    nw @6; #N+W
+    se @7; #S+E
+    sw @8; #S+W
+    u @9; #unknown
+  }
 
   struct SpeedCameraMapPosition {
     latitude @0 :Float32;
@@ -1271,14 +1290,6 @@ struct SpeedCamera {
     roadType @4 :RoadType;
     vehicleDistance @5 :Float32;
     vehicleTrackAngle @6 :Float32;
-
-    enum SpeedDirect {
-      n @0;
-      s @1;
-      e @2;
-      w @3;
-      d @4;
-    }
 
     enum RoadType {
       road @0;
