@@ -88,12 +88,12 @@ QWidget * vag_panel() {
 
   vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagSpeedCameraEnabled",
-                                            "Enable Speed Camera",
+                                            "Enable Speed Camera (Alpha)",
                                             "Speed camera limitation warnning",
                                             ""
                                             ));
   vag_list->addWidget(new ParamControl("IsVagSaccEnabled",
-                                            " Enable SACC",
+                                            " Enable SACC (Useless for develop debuging)",
                                             "Enable Speedcamera Adaptive Cruise Control",
                                             ""
                                             ));
