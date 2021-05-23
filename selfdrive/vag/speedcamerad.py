@@ -184,10 +184,10 @@ class SpeedCamera:
       for row in rows:
         self.VehicleMapPositionList.append(MapPosition(row[0], row[1], SpeedDirect.u))
       fd.close()
-      print(time.ctime())
+      return True
     except:
       print('[add_simulate_vihecle_data()] Exception!')
-      exit(1)
+      return False
 
   def update_events(self, VehicleLatitude, VehicleLongitude, VehicleSpeed):
     #print("[PONTEST][speedcamerad.py][update_events()]", self.VehicleTrackIndex, VehicleLatitude, VehicleLongitude, VehicleSpeed)
@@ -248,7 +248,7 @@ class SpeedCamera:
 
         #if (ConcentricLayer1Item.Distance < self.VehiclePreviousSpeedCameraDistance) and \
         if VehicleDirectMatched and \
-           (((ConcentricLayer1Item.Distance < 0.5) and \
+           (((ConcentricLayer1Item.Distance < 0.6) and \
              (ConcentricLayer1Item.Distance > 0.1) and \
              (ConcentricLayer1Item.Angle < 10)) or \
             ((ConcentricLayer1Item.Distance < 0.1) and \
@@ -292,15 +292,18 @@ class SpeedCamera:
 
     #Simulate
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Simulate")
-    self.add_simulate_vihecle_data()
-    while True:
-      if self.VehicleTrackIndex < 1900:
-        self.update_events(self.VehicleMapPositionList[self.VehicleTrackIndex].Latitude, self.VehicleMapPositionList[self.VehicleTrackIndex].Longitude, 50)
-        self.VehicleTrackIndex = self.VehicleTrackIndex + 1
-      else:
-        print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Simulate Reset")
-        break
-      time.sleep(0.1) #100 ms
+    IsSimluateReady = self.add_simulate_vihecle_data()
+    if IsSimluateReady == True:
+      while True:
+        if self.VehicleTrackIndex < len(self.VehicleMapPositionList):
+          self.update_events(self.VehicleMapPositionList[self.VehicleTrackIndex].Latitude, self.VehicleMapPositionList[self.VehicleTrackIndex].Longitude, 50)
+          self.VehicleTrackIndex = self.VehicleTrackIndex + 1
+        else:
+          print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Simulate Reset")
+          break
+        time.sleep(0.1) #100 ms
+    else:
+      print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Ignore Simulating")
 
     #Real GPS data
     print("[PONTEST][speedcamerad.py][speedcamerad_thread()] Real GPS data")
