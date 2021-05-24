@@ -284,7 +284,7 @@ class SpeedCamera:
     self.pm.send('speedCamera', sc_send)
     self.VehiclePreviousLatitude = VehicleLatitude
     self.VehiclePreviousLongitude = VehicleLongitude
-    self.VehiclePreviousSpeedCameraDistance = ConcentricLayer1Item.Distance
+    #self.VehiclePreviousSpeedCameraDistance = ConcentricLayer1Item.Distance
 
 
   def speedcamerad_thread(self):
