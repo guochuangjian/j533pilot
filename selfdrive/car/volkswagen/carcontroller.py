@@ -2,7 +2,7 @@ from cereal import car
 from common.params import Params, put_nonblocking
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.volkswagen import volkswagencan
-from selfdrive.car.volkswagen.values import DBC, CANBUS, MQB_LDW_MESSAGES, BUTTON_STATES, CarControllerParams, NetworkLocation
+from selfdrive.car.volkswagen.values import DBC, CANBUS, NetworkLocation, MQB_LDW_MESSAGES, BUTTON_STATES, CarControllerParams
 from opendbc.can.packer import CANPacker
 
 
@@ -19,7 +19,6 @@ class CarController():
     self.graMsgStartFramePrev = 0
     self.graMsgBusCounterPrev = 0
 
-    #Pon Autodetect J533 or comma camera can
     if CP.networkLocation == NetworkLocation.fwdCamera:
       self.ext_can = CANBUS.pt
     else:
