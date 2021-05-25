@@ -248,11 +248,11 @@ class SpeedCamera:
 
         #if (ConcentricLayer1Item.Distance < self.VehiclePreviousSpeedCameraDistance) and \
         if VehicleDirectMatched and \
+           VehicleSpeed > 30 and \
            (((ConcentricLayer1Item.Distance < 0.6) and \
              (ConcentricLayer1Item.Distance > 0.1) and \
              (ConcentricLayer1Item.Angle < 10)) or \
             ((ConcentricLayer1Item.Distance < 0.1) and \
-            VehicleSpeed > 30 and \
              self.SpeedCameraDetected)):
           self.SpeedCameraDetected = True
           sc_send.speedCamera.speedCameraDetected = True
