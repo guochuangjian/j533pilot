@@ -252,6 +252,7 @@ class SpeedCamera:
              (ConcentricLayer1Item.Distance > 0.1) and \
              (ConcentricLayer1Item.Angle < 10)) or \
             ((ConcentricLayer1Item.Distance < 0.1) and \
+            VehicleSpeed > 30 and \
              self.SpeedCameraDetected)):
           self.SpeedCameraDetected = True
           sc_send.speedCamera.speedCameraDetected = True
@@ -259,7 +260,7 @@ class SpeedCamera:
           self.SpeedCameraDetected = False
           sc_send.speedCamera.speedCameraDetected = False
 
-        print("SpeedCamItem=", self.VehicleTrackIndex, VehicleLatitude, VehicleLongitude, \
+        print("SpeedCamItem=", self.VehicleTrackIndex, VehicleLatitude, VehicleLongitude, VehicleSpeed, \
                 sc_send.speedCamera.vehicleDirect, sc_send.speedCamera.speedCameraDetected, \
                 ConcentricLayer1Item.Latitude, ConcentricLayer1Item.Longitude, \
                 ConcentricLayer1Item.Direct, ConcentricLayer1Item.SpeedLimit, \
