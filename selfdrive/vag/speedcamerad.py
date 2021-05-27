@@ -319,12 +319,12 @@ class SpeedCamera:
                   location.gpsLocationExternal.latitude, \
                   location.gpsLocationExternal.longitude, \
                   location.gpsLocationExternal.altitude, \
-                  location.gpsLocationExternal.speed, \
+                  location.gpsLocationExternal.speed, \ #Meter Per Second need transfer to KM Per Hour
                   location.gpsLocationExternal.timestamp, \
                   location.gpsLocationExternal.source)
           self.update_events(location.gpsLocationExternal.latitude, \
                              location.gpsLocationExternal.longitude, \
-                             location.gpsLocationExternal.speed)
+                             float(location.gpsLocationExternal.speed)*3.6)
         self.VehicleTrackIndex = self.VehicleTrackIndex + 1
       else:
         print("[PONTEST][speedcamerad.py][speedcamerad_thread()] SpeedCam Disabled")
