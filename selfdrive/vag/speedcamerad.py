@@ -319,7 +319,7 @@ class SpeedCamera:
                   location.gpsLocationExternal.latitude, \
                   location.gpsLocationExternal.longitude, \
                   location.gpsLocationExternal.altitude, \
-                  location.gpsLocationExternal.speed, \ #Meter Per Second need transfer to KM Per Hour
+                  location.gpsLocationExternal.speed, \
                   location.gpsLocationExternal.timestamp, \
                   location.gpsLocationExternal.source)
           self.update_events(location.gpsLocationExternal.latitude, \
