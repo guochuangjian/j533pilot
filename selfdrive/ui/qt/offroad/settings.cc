@@ -23,13 +23,16 @@
 QWidget * vag_panel() {
   QVBoxLayout *vag_list = new QVBoxLayout();
   vag_list->setSpacing(30);
+
+  vag_list->addWidget(new QLabel("Enable HUD"));
+
   ParamControl* paramControlIsVagInfoboxEnabled = new ParamControl("IsVagInfoboxEnabled",
-                                            "Enable Info Box",
+                                            "  Enable Info Box",
                                             "Show info box on the view screen",
                                             ""
                                               );
+  //paramControlIsVagInfoboxEnabled->setSpacing(0);
   vag_list->addWidget(paramControlIsVagInfoboxEnabled);
-
 #if 0
   QComboBox* comboBoxLeftHud1 = new QComboBox();
   comboBoxLeftHud1->addItem("ABC", 0);
@@ -45,29 +48,21 @@ QWidget * vag_panel() {
   )");
   vag_list->addWidget(comboBoxLeftHud1);
 #endif
-
-  vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagInfobarEnabled",
-                                            "Enable Infobar",
+                                            "  Enable Infobar",
                                             "Show infobar on the view screen",
                                             ""
                                               ));
-
-  vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagBlinkerEnabled",
-                                            "Enable Blinker",
+                                            "  Enable Blinker",
                                             "Show blinker on the view screen",
                                             ""
                                             ));
-
-  vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagBlindspotEnabled",
-                                            "Enable Blindspot",
+                                            "  Enable Blindspot",
                                             "Show blindspot on the view screen",
                                             ""
                                             ));
-
-  vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagLeadCarEnabled",
                                             "  Enable Lead Car",
                                             "Show lead car on the view screen",
@@ -90,6 +85,20 @@ QWidget * vag_panel() {
                                             "Disable Fulltime LKA with brake",
                                             ""
                                             ));
+
+  vag_list->addWidget(horizontal_line());
+  vag_list->addWidget(new ParamControl("IsVagSpeedCameraEnabled",
+                                            "Enable Speed Camera (Alpha)",
+                                            "Speed camera limitation warnning",
+                                            ""
+                                            ));
+#if 0
+  vag_list->addWidget(new ParamControl("IsVagSaccEnabled",
+                                            " Enable SACC (Useless for develop debuging)",
+                                            "Enable Speedcamera Adaptive Cruise Control",
+                                            ""
+                                            ));
+#endif
 
   vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagDevelopModeEnabled",

@@ -129,6 +129,7 @@ typedef struct UIScene {
   cereal::ControlsState::Reader controls_state;
   cereal::DriverState::Reader driver_state;
   cereal::DriverMonitoringState::Reader dmonitoring_state;
+  cereal::SpeedCamera::Reader speed_camera;
 
   // gps
   int satelliteCount;

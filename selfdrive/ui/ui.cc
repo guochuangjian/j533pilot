@@ -56,7 +56,7 @@ static void ui_init_vision(UIState *s) {
 void ui_init(UIState *s) {
   s->sm = new SubMaster({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "liveLocationKalman",
-    "pandaState", "carParams", "driverState", "driverMonitoringState", "sensorEvents", "carState", "ubloxGnss",
+    "pandaState", "carParams", "driverState", "driverMonitoringState", "sensorEvents", "carState", "ubloxGnss", "speedCamera",
 #ifdef QCOM2
     "roadCameraState",
 #endif
@@ -235,6 +235,11 @@ static void update_sockets(UIState *s) {
     auto camera_state = sm["roadCameraState"].getRoadCameraState();
     float gain = camera_state.getGainFrac() * (camera_state.getGlobalGain() > 100 ? 2.5 : 1.0) / 10.0;
     scene.light_sensor = std::clamp<float>((1023.0 / 1757.0) * (1757.0 - camera_state.getIntegLines()) * (1.0 - gain), 0.0, 1023.0);
+  }
+#endif
+#if 1 //PONTEST Develop SACC
+  if (sm.updated("speedCamera")) {
+    scene.speed_camera = sm["speedCamera"].getSpeedCamera();
   }
 #endif
   scene.started = scene.deviceState.getStarted() || scene.driver_view;
