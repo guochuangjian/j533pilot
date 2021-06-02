@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import json
-import time
 import numpy as np
 import sympy as sp
 import cereal.messaging as messaging
@@ -183,7 +182,6 @@ class Localizer():
 
     self.last_gps_fix = current_time
 
-    #print("[PONTEST][locationd.py][handle_gps()] time=", time.ctime(), log.latitude, log.longitude)
     self.converter = coord.LocalCoord.from_geodetic([log.latitude, log.longitude, log.altitude])
     ecef_pos = self.converter.ned2ecef([0, 0, 0])
     ecef_vel = self.converter.ned2ecef(np.array(log.vNED)) - ecef_pos
@@ -305,6 +303,7 @@ def locationd_thread(sm, pm, disabled_logs=None):
 
   while True:
     sm.update()
+
     for sock, updated in sm.updated.items():
       if updated and sm.valid[sock]:
         t = sm.logMonoTime[sock] * 1e-9
@@ -339,7 +338,6 @@ def locationd_thread(sm, pm, disabled_logs=None):
           'altitude': msg.liveLocationKalman.positionGeodetic.value[2],
         }
         params.put("LastGPSPosition", json.dumps(location))
-        #print("[PONTEST][locationd.py][locationd_thread()] location=", location)
 
 
 def main(sm=None, pm=None):

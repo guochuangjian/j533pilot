@@ -441,7 +441,7 @@ void ui_draw_hud(UIState *s) {
     //ui_draw_top_hud(s);
     //ui_draw_bottom_hud(s);
     ui_draw_left_hud(s);
-    ui_draw_right_hud(s);
+    //ui_draw_right_hud(s);
   }
   if(IsVagDevelopModeEnabled) {
    ui_draw_infotext(s);

@@ -426,7 +426,6 @@ class Controls:
         right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.1
 
         if left_deviation or right_deviation:
-          print("[PONTEST][controlsd.py][state_control()] EventName.steerSaturated !!! !!! !!!")
           self.events.add(EventName.steerSaturated)
 
     return actuators, v_acc_sol, a_acc_sol, lac_log
@@ -473,7 +472,6 @@ class Controls:
       CC.hudControl.rightLaneDepart = bool(r_lane_change_prob > LANE_DEPARTURE_THRESHOLD and r_lane_close)
 
     if CC.hudControl.rightLaneDepart or CC.hudControl.leftLaneDepart:
-      print("[PONTEST][controlsd.py][publish_logs()] EventName.ldw !!! !!! !!!")
       self.events.add(EventName.ldw)
 
     clear_event = ET.WARNING if ET.WARNING not in self.current_alert_types else None
