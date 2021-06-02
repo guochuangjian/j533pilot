@@ -44,6 +44,7 @@ def manager_init():
     ("IsVagInfobarEnabled", "1"),
     ("IsVagBlinkerEnabled", "1"),
     ("IsVagBlindspotEnabled", "1"),
+    ("IsVagLeadCarEnabled", "1"),
     ("IsVagFulltimeLkaEnabled", "0"),
     ("IsVagFulltimeLkaDisableWithBlinker", "0"),
     ("IsVagFulltimeLkaDisableWithBrake", "0"),

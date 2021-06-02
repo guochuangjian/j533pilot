@@ -68,6 +68,13 @@ QWidget * vag_panel() {
                                             ));
 
   vag_list->addWidget(horizontal_line());
+  vag_list->addWidget(new ParamControl("IsVagLeadCarEnabled",
+                                            "  Enable Lead Car",
+                                            "Show lead car on the view screen",
+                                            ""
+                                            ));
+
+  vag_list->addWidget(horizontal_line());
   vag_list->addWidget(new ParamControl("IsVagFulltimeLkaEnabled",
                                             "Enable Fulltime LKA",
                                             "Fulltime enable LKA without ACC engaged",
