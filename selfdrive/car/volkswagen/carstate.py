@@ -4,7 +4,7 @@ from selfdrive.config import Conversions as CV
 from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
-from selfdrive.car.volkswagen.values import DBC, CANBUS, TransmissionType, GearShifter, BUTTON_STATES, CarControllerParams
+from selfdrive.car.volkswagen.values import DBC, CANBUS, TransmissionType, GearShifter, BUTTON_STATES, CarControllerParams, NetworkLocation
 
 class CarState(CarStateBase):
   def __init__(self, CP):
@@ -27,7 +27,9 @@ class CarState(CarStateBase):
     ret.vEgoRaw = float(np.mean([ret.wheelSpeeds.fl, ret.wheelSpeeds.fr, ret.wheelSpeeds.rl, ret.wheelSpeeds.rr]))
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
 
-    ret.standstill = ret.vEgoRaw < 0.1
+    #Pon Fix stop and go acc resume +1
+    #ret.standstill = ret.vEgoRaw < 0.1
+    ret.standstill = bool(pt_cp.vl["ESP_21"]['ESP_Haltebestaetigung']) and ret.vEgoRaw < 0.01
 
     # Update steering angle, rate, yaw rate, and driver input torque. VW send
     # the sign/direction in a separate signal so they must be recombined.
@@ -185,6 +187,7 @@ class CarState(CarStateBase):
       ("EPS_VZ_Lenkmoment", "LH_EPS_03", 0),        # Driver torque input sign
       ("EPS_HCA_Status", "LH_EPS_03", 0),           # Steering rack HCA support configured
       ("ESP_Tastung_passiv", "ESP_21", 0),          # Stability control disabled
+      ("ESP_Haltebestaetigung", "ESP_21", 0),       # prevents set point creep
       ("KBI_MFA_v_Einheit_02", "Einheiten_01", 0),  # MPH vs KMH speed display
       ("KBI_Handbremse", "Kombi_01", 0),            # Manual handbrake applied
       ("TSK_Status", "TSK_06", 0),                  # ACC engagement status from drivetrain coordinator
@@ -249,6 +252,13 @@ class CarState(CarStateBase):
                   ("BCM1_Rueckfahrlicht_Schalter", "Gateway_72", 0)]  # Reverse light from BCM
       checks += [("Motor_14", 10)]  # From J623 Engine control module
 
+    #Pon Autodetect J533 or comma camera can
+    if CP.networkLocation == NetworkLocation.fwdCamera:
+      # Extended CAN devices other than the camera are here on CANBUS.pt
+      # TODO: Add bsm checks[] when we have solid autodetection
+      signals += MqbExtraSignals.acc_radar[0] + MqbExtraSignals.bsm[0]
+      checks += MqbExtraSignals.acc_radar[1]
+
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.pt)
 
   @staticmethod
@@ -268,4 +278,41 @@ class CarState(CarStateBase):
       ("LDW_02", 10)        # From R242 Driver assistance camera
     ]
 
+    #Pon Autodetect J533 or comma camera can
+    if CP.networkLocation == NetworkLocation.gateway:
+      # Extended CAN devices other than the camera are here on CANBUS.cam
+      # TODO: Add bsm checks[] when we have solid autodetection
+      signals += MqbExtraSignals.acc_radar[0] + MqbExtraSignals.bsm[0]
+      checks += MqbExtraSignals.acc_radar[1]
+
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.cam)
+
+#Pon Autodetect J533 or comma camera can
+class MqbExtraSignals:
+  # Additional signal and message lists to dynamically add for optional or bus-portable controllers
+  acc_radar = ([
+    ("ACC_Wunschgeschw", "ACC_02", 0),              # ACC set speed
+    ("AWV2_Freigabe", "ACC_10", 0),                 # FCW brake jerk release
+    ("ANB_Teilbremsung_Freigabe", "ACC_10", 0),     # AEB partial braking release
+    ("ANB_Zielbremsung_Freigabe", "ACC_10", 0),     # AEB target braking release
+  ], [
+    ("ACC_10", 50),                                 # From J428 ACC radar control module
+    ("ACC_02", 17),                                 # From J428 ACC radar control module
+  ])
+  lkas_camera = ([
+    ("LDW_SW_Warnung_links", "LDW_02", 0),          # Blind spot in warning mode on left side due to lane departure
+    ("LDW_SW_Warnung_rechts", "LDW_02", 0),         # Blind spot in warning mode on right side due to lane departure
+    ("LDW_Seite_DLCTLC", "LDW_02", 0),              # Direction of most likely lane departure (left or right)
+    ("LDW_DLC", "LDW_02", 0),                       # Lane departure, distance to line crossing
+    ("LDW_TLC", "LDW_02", 0),                       # Lane departure, time to line crossing
+  ], [
+    ("LDW_02", 10),                                 # From R242 Driver assistance camera
+  ])
+  bsm = ([
+    ("SWA_Infostufe_SWA_li", "SWA_01", 0),          # Blind spot object info, left
+    ("SWA_Warnung_SWA_li", "SWA_01", 0),            # Blind spot object warning, left
+    ("SWA_Infostufe_SWA_re", "SWA_01", 0),          # Blind spot object info, right
+    ("SWA_Warnung_SWA_re", "SWA_01", 0),            # Blind spot object warning, right
+  ], [
+    ("SWA_01", 20),                                 # From J1086 Lane Change Assist
+  ])
