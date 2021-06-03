@@ -35,18 +35,6 @@ def manager_init():
     ("HasAcceptedTerms", "0"),
     ("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')),
     ("OpenpilotEnabledToggle", "1"),
-    #Pon Add setttings parameter
-    ("IsVagInfoboxEnabled", "1"),
-    ("IsVagInfobarEnabled", "1"),
-    ("IsVagBlinkerEnabled", "1"),
-    ("IsVagBlindspotEnabled", "1"),
-    ("IsVagLeadCarEnabled", "1"),
-    ("IsVagFulltimeLkaEnabled", "0"),
-    ("IsVagFulltimeLkaDisableWithBlinker", "0"),
-    ("IsVagFulltimeLkaDisableWithBrake", "0"),
-    ("IsVagSpeedCameraEnabled", "0"),
-    ("IsVagSaccEnabled", "0"),
-    ("IsVagDevelopModeEnabled", "0"),
   ]
 
   if TICI:
