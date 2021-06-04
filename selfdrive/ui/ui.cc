@@ -215,6 +215,11 @@ static void update_state(UIState *s) {
     float gain = camera_state.getGainFrac() * (camera_state.getGlobalGain() > 100 ? 2.5 : 1.0) / 10.0;
     scene.light_sensor = std::clamp<float>((1023.0 / 1757.0) * (1757.0 - camera_state.getIntegLines()) * (1.0 - gain), 0.0, 1023.0);
   }
+#if 0 //PONTEST Develop SACC
+  if (sm.updated("speedCamera")) {
+    scene.speed_camera = sm["speedCamera"].getSpeedCamera();
+  }
+#endif
   scene.started = scene.deviceState.getStarted() || scene.driver_view;
 }
 
@@ -276,7 +281,7 @@ static void update_status(UIState *s) {
 QUIState::QUIState(QObject *parent) : QObject(parent) {
   ui_state.sm = std::make_unique<SubMaster, const std::initializer_list<const char *>>({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "liveLocationKalman",
-    "pandaState", "carParams", "driverState", "driverMonitoringState", "sensorEvents", "carState", "ubloxGnss",
+    "pandaState", "carParams", "driverState", "driverMonitoringState", "sensorEvents", "carState", "ubloxGnss", "speedCamera",
 #ifdef QCOM2
     "roadCameraState",
 #endif

@@ -20,9 +20,11 @@
 
 #include "selfdrive/common/timing.h"
 #include "selfdrive/common/util.h"
+#include "selfdrive/common/params.h"
 #include "selfdrive/hardware/hw.h"
 
 #include "selfdrive/ui/ui.h"
+#include "selfdrive/ui/paint_extend.h"
 
 // TODO: this is also hardcoded in common/transformations/camera.py
 // TODO: choose based on frame input size
@@ -286,6 +288,10 @@ static void ui_draw_vision_header(UIState *s) {
   ui_draw_vision_maxspeed(s);
   ui_draw_vision_speed(s);
   ui_draw_vision_event(s);
+#if 1
+  //Pon Add HUD UI
+  ui_draw_hud(s);
+#endif
 }
 
 static void ui_draw_vision_frame(UIState *s) {
@@ -349,6 +355,14 @@ void ui_draw(UIState *s, int w, int h) {
   }
   nvgEndFrame(s->vg);
   glDisable(GL_BLEND);
+#if 1
+  //Pon Hook setting - IsVagDevelopModeEnabled
+  Params params;
+  bool IsVagDevelopModeEnabled = params.getBool("IsVagDevelopModeEnabled");
+  if(IsVagDevelopModeEnabled) {
+    ui_draw_hud(s);
+  }
+#endif
 }
 
 void ui_draw_image(const UIState *s, const Rect &r, const char *name, float alpha) {

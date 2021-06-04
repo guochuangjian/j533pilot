@@ -19,6 +19,103 @@
 #include "selfdrive/ui/qt/widgets/toggle.h"
 #include "selfdrive/ui/ui.h"
 
+//Pon Settings menu
+QWidget * vag_panel() {
+  QVBoxLayout *vag_list = new QVBoxLayout();
+  vag_list->setSpacing(30);
+
+  vag_list->addWidget(new QLabel("Enable HUD"));
+
+  ParamControl* paramControlIsVagInfoboxEnabled = new ParamControl("IsVagInfoboxEnabled",
+                                            "  Enable Info Box",
+                                            "Show info box on the view screen",
+                                            ""
+                                              );
+  //paramControlIsVagInfoboxEnabled->setSpacing(0);
+  vag_list->addWidget(paramControlIsVagInfoboxEnabled);
+#if 0
+  QComboBox* comboBoxLeftHud1 = new QComboBox();
+  comboBoxLeftHud1->addItem("ABC", 0);
+  comboBoxLeftHud1->addItem("BBC", 1);
+  comboBoxLeftHud1->addItem("CBD", 2);
+  comboBoxLeftHud1->setStyleSheet(R"(
+    QComboBox {
+        border: 1px solid gray;
+        border-radius: 3px;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
+  )");
+  vag_list->addWidget(comboBoxLeftHud1);
+#endif
+  vag_list->addWidget(new ParamControl("IsVagInfobarEnabled",
+                                            "  Enable Infobar",
+                                            "Show infobar on the view screen",
+                                            ""
+                                              ));
+  vag_list->addWidget(new ParamControl("IsVagBlinkerEnabled",
+                                            "  Enable Blinker",
+                                            "Show blinker on the view screen",
+                                            ""
+                                            ));
+  vag_list->addWidget(new ParamControl("IsVagBlindspotEnabled",
+                                            "  Enable Blindspot",
+                                            "Show blindspot on the view screen",
+                                            ""
+                                            ));
+  vag_list->addWidget(new ParamControl("IsVagLeadCarEnabled",
+                                            "  Enable Lead Car",
+                                            "Show lead car on the view screen",
+                                            ""
+                                            ));
+
+  vag_list->addWidget(horizontal_line());
+  vag_list->addWidget(new ParamControl("IsVagFulltimeLkaEnabled",
+                                            "Enable Fulltime LKA",
+                                            "Fulltime enable LKA without ACC engaged",
+                                            ""
+                                            ));
+  vag_list->addWidget(new ParamControl("IsVagFulltimeLkaDisableWithBlinker",
+                                            "  Disable Fulltime LKA with blinker",
+                                            "Disable Fulltime LKA with blinker",
+                                            ""
+                                            ));
+  vag_list->addWidget(new ParamControl("IsVagFulltimeLkaDisableWithBrake",
+                                            "  Disable Fulltime LKA with brake",
+                                            "Disable Fulltime LKA with brake",
+                                            ""
+                                            ));
+
+  vag_list->addWidget(horizontal_line());
+  vag_list->addWidget(new ParamControl("IsVagSpeedCameraEnabled",
+                                            "Enable Speed Camera (Alpha)",
+                                            "Speed camera limitation warnning",
+                                            ""
+                                            ));
+  vag_list->addWidget(new ParamControl("IsVagSaccEnabled",
+                                            " Enable SACC (Useless)",
+                                            "Enable Speedcamera Adaptive Cruise Control",
+                                            ""
+                                            ));
+
+  vag_list->addWidget(horizontal_line());
+  vag_list->addWidget(new ParamControl("IsVagDevelopModeEnabled",
+                                            "Enable develop mode",
+                                            "Enable develop mode",
+                                            ""
+                                            ));
+
+  vag_list->addWidget(horizontal_line());
+  vag_list->addWidget(new ButtonControl("Android Settings", "OPEN", "",
+                                      [=]() { system("am start com.android.settings"); }));
+
+  vag_list->addStretch(0);
+  QWidget *widget = new QWidget;
+  widget->setLayout(vag_list);
+  return widget;
+}
+
+
 TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
   QVBoxLayout *toggles_list = new QVBoxLayout();
 
@@ -302,6 +399,7 @@ void SettingsWindow::showEvent(QShowEvent *event) {
     {"Network", network_panel(this)},
     {"Toggles", new TogglesPanel(this)},
     {"Developer", new DeveloperPanel()},
+    {"VAG", vag_panel()},
   };
 
   sidebar_layout->addSpacing(45);
