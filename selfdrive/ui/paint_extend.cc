@@ -347,6 +347,7 @@ void ui_draw_speedcamera(UIState *s) {
   char speedLimit[16];
   char distance[16];
 
+#if 0
   char value[64];
   int sidebar_fit_x = 0;
   //Fit sidebar screen
@@ -367,7 +368,7 @@ void ui_draw_speedcamera(UIState *s) {
            s->scene.speed_camera.getSpeedCameraMapPosition().getLatitude(), \
            s->scene.speed_camera.getSpeedCameraMapPosition().getLongitude());
   ui_draw_hud_text(s, sidebar_fit_x, 900, value, 80, COLOR_YELLOW);
-
+#endif
 
   if(s->scene.speed_camera.getSpeedCameraMapPosition().getSpeedLimitation() == 25.0) {
     snprintf(speedLimit, sizeof(speedLimit), "speed_limit_25");
@@ -434,7 +435,7 @@ void ui_draw_hud(UIState *s) {
     //ui_draw_top_hud(s);
     //ui_draw_bottom_hud(s);
     ui_draw_left_hud(s);
-    ui_draw_right_hud(s);
+    //ui_draw_right_hud(s);
   }
   if(IsVagDevelopModeEnabled) {
    ui_draw_infotext(s);
