@@ -46,9 +46,10 @@ static struct service services[] = {
   { .name = "wideRoadCameraState", .port = 8042, .should_log = true, .frequency = 20, .decimation = 1 },
   { .name = "modelV2", .port = 8043, .should_log = true, .frequency = 20, .decimation = 20 },
   { .name = "managerState", .port = 8044, .should_log = true, .frequency = 2, .decimation = 1 },
-  { .name = "testModel", .port = 8045, .should_log = false, .frequency = 0, .decimation = -1 },
-  { .name = "testLiveLocation", .port = 8046, .should_log = false, .frequency = 0, .decimation = -1 },
-  { .name = "testJoystick", .port = 8047, .should_log = false, .frequency = 0, .decimation = -1 },
+  { .name = "speedCamera", .port = 8045, .should_log = false, .frequency = 20, .decimation = 1 },
+  { .name = "testModel", .port = 8046, .should_log = false, .frequency = 0, .decimation = -1 },
+  { .name = "testLiveLocation", .port = 8047, .should_log = false, .frequency = 0, .decimation = -1 },
+  { .name = "testJoystick", .port = 8048, .should_log = false, .frequency = 0, .decimation = -1 },
 };
 #endif
 
