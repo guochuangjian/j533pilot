@@ -40,7 +40,7 @@ class CarState(CarStateBase):
     ret.steeringPressed = abs(ret.steeringTorque) > CarControllerParams.STEER_DRIVER_ALLOWANCE
     ret.yawRate = pt_cp.vl["ESP_02"]['ESP_Gierrate'] * (1, -1)[int(pt_cp.vl["ESP_02"]['ESP_VZ_Gierrate'])] * CV.DEG_TO_RAD
 
-    # Verify EPS readiness to accept steering commands
+    ## Verify EPS readiness to accept steering commands
     #hca_status = self.hca_status_values.get(pt_cp.vl["LH_EPS_03"]["EPS_HCA_Status"])
     #ret.steerError = hca_status in ["DISABLED", "FAULT"]
     #ret.steerWarning = hca_status in ["INITIALIZING", "REJECTED"]
@@ -154,6 +154,7 @@ class CarState(CarStateBase):
     # accept and respond to HCA_01 messages and has not encountered a fault.
     self.steeringFault = not pt_cp.vl["LH_EPS_03"]["EPS_HCA_Status"]
 
+
     # Additional safety checks performed in CarInterface.
     self.parkingBrakeSet = bool(pt_cp.vl["Kombi_01"]['KBI_Handbremse'])  # FIXME: need to include an EPB check as well
     ret.espDisabled = pt_cp.vl["ESP_21"]['ESP_Tastung_passiv'] != 0
@@ -191,17 +192,12 @@ class CarState(CarStateBase):
       ("MO_Kuppl_schalter", "Motor_14", 0),         # Clutch switch
       ("EPS_Lenkmoment", "LH_EPS_03", 0),           # Absolute driver torque input
       ("EPS_VZ_Lenkmoment", "LH_EPS_03", 0),        # Driver torque input sign
-      ("EPS_HCA_Status", "LH_EPS_03", 0),           # Steering rack HCA support configured
+      ("EPS_HCA_Status", "LH_EPS_03", 3),           # EPS HCA control status
       ("ESP_Tastung_passiv", "ESP_21", 0),          # Stability control disabled
       ("ESP_Haltebestaetigung", "ESP_21", 0),       # prevents set point creep
       ("KBI_MFA_v_Einheit_02", "Einheiten_01", 0),  # MPH vs KMH speed display
       ("KBI_Handbremse", "Kombi_01", 0),            # Manual handbrake applied
       ("TSK_Status", "TSK_06", 0),                  # ACC engagement status from drivetrain coordinator
-      ("TSK_Fahrzeugmasse_02", "Motor_16", 0),      # Estimated vehicle mass from drivetrain coordinator
-      ("ACC_Wunschgeschw", "ACC_02", 0),            # ACC set speed
-      ("AWV2_Freigabe", "ACC_10", 0),               # FCW brake jerk release
-      ("ANB_Teilbremsung_Freigabe", "ACC_10", 0),   # AEB partial braking release
-      ("ANB_Zielbremsung_Freigabe", "ACC_10", 0),   # AEB target braking release
       ("GRA_Hauptschalter", "GRA_ACC_01", 0),       # ACC button, on/off
       ("GRA_Abbrechen", "GRA_ACC_01", 0),           # ACC button, cancel
       ("GRA_Tip_Setzen", "GRA_ACC_01", 0),          # ACC button, set
@@ -222,30 +218,16 @@ class CarState(CarStateBase):
       ("ESP_19", 100),      # From J104 ABS/ESP controller
       ("ESP_05", 50),       # From J104 ABS/ESP controller
       ("ESP_21", 50),       # From J104 ABS/ESP controller
-      ("ACC_10", 50),       # From J428 ACC radar control module
       ("Motor_20", 50),     # From J623 Engine control module
       ("TSK_06", 50),       # From J623 Engine control module
-      ("ESP_02", 50),
-      ("GRA_ACC_01", 33),   # From J??? steering wheel control buttons
-      ("ACC_02", 17),       # From J428 ACC radar control module
+      ("ESP_02", 50),       # From J104 ABS/ESP controller
+      ("GRA_ACC_01", 33),   # From J533 CAN gateway (via LIN from steering wheel controls)
       ("Gateway_72", 10),   # From J533 CAN gateway (aggregated data)
       ("Motor_14", 10),     # From J623 Engine control module
       ("Airbag_02", 5),     # From J234 Airbag control module
       ("Kombi_01", 2),      # From J285 Instrument cluster
-      ("Motor_16", 2),      # From J623 Engine control module
       ("Einheiten_01", 1),  # From J??? not known if gateway, cluster, or BCM
     ]
-
-    if CP.enableBsm:
-      signals += [
-        ("SWA_Infostufe_SWA_li", "SWA_01", 0),        # Blind spot object info, left
-        ("SWA_Warnung_SWA_li", "SWA_01", 0),          # Blind spot object warning, left
-        ("SWA_Infostufe_SWA_re", "SWA_01", 0),        # Blind spot object info, right
-        ("SWA_Warnung_SWA_re", "SWA_01", 0),          # Blind spot object warning, right
-      ]
-      checks += [
-        ("SWA_01", 20),
-      ]
 
     if CP.transmissionType == TransmissionType.automatic:
       signals += [("GE_Fahrstufe", "Getriebe_11", 0)]  # Auto trans gear selector position
