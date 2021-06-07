@@ -17,7 +17,7 @@ class CarState(CarStateBase):
       self.hca_status_values = can_define.dv["LH_EPS_03"]["EPS_HCA_Status"]
     self.buttonStates = BUTTON_STATES.copy()
 
-  def update(self, pt_cp, cam_cp, trans_type):
+  def update(self, pt_cp, cam_cp, ext_cp, trans_type):
     ret = car.CarState.new_message()
     # Update vehicle speed and acceleration from ABS wheel speeds.
     ret.wheelSpeeds.fl = pt_cp.vl["ESP_19"]['ESP_VL_Radgeschw_02'] * CV.KPH_TO_MS
@@ -41,9 +41,9 @@ class CarState(CarStateBase):
     ret.yawRate = pt_cp.vl["ESP_02"]['ESP_Gierrate'] * (1, -1)[int(pt_cp.vl["ESP_02"]['ESP_VZ_Gierrate'])] * CV.DEG_TO_RAD
 
     # Verify EPS readiness to accept steering commands
-    hca_status = self.hca_status_values.get(pt_cp.vl["LH_EPS_03"]["EPS_HCA_Status"])
-    ret.steerError = hca_status in ["DISABLED", "FAULT"]
-    ret.steerWarning = hca_status in ["INITIALIZING", "REJECTED"]
+    #hca_status = self.hca_status_values.get(pt_cp.vl["LH_EPS_03"]["EPS_HCA_Status"])
+    #ret.steerError = hca_status in ["DISABLED", "FAULT"]
+    #ret.steerWarning = hca_status in ["INITIALIZING", "REJECTED"]
 
     # Update gas, brakes, and gearshift.
     ret.gas = pt_cp.vl["Motor_20"]['MO_Fahrpedalrohwert_01'] / 100.0
@@ -105,8 +105,8 @@ class CarState(CarStateBase):
     # braking release bits are set.
     # Refer to VW Self Study Program 890253: Volkswagen Driver Assistance
     # Systems, chapter on Front Assist with Braking: Golf Family for all MQB
-    ret.stockFcw = bool(pt_cp.vl["ACC_10"]["AWV2_Freigabe"])
-    ret.stockAeb = bool(pt_cp.vl["ACC_10"]["ANB_Teilbremsung_Freigabe"]) or bool(pt_cp.vl["ACC_10"]["ANB_Zielbremsung_Freigabe"])
+    ret.stockFcw = bool(ext_cp.vl["ACC_10"]["AWV2_Freigabe"])
+    ret.stockAeb = bool(ext_cp.vl["ACC_10"]["ANB_Teilbremsung_Freigabe"]) or bool(ext_cp.vl["ACC_10"]["ANB_Zielbremsung_Freigabe"])
 
     # Update ACC radar status.
     accStatus = pt_cp.vl["TSK_06"]['TSK_Status']

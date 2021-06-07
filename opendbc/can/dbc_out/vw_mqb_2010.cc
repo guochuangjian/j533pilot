@@ -12943,6 +12943,12 @@ const Msg msgs[] = {
 
 const Val vals[] = {
     {
+      .name = "EPS_HCA_Status",
+      .address = 0x9F,
+      .def_val = "0 DISABLED 1 INITIALIZING 2 FAULT 3 READY 4 REJECTED 5 ACTIVE",
+      .sigs = sigs_159,
+    },
+    {
       .name = "GE_Fahrstufe",
       .address = 0xAD,
       .def_val = "5 P 6 R 7 N 8 D 9 S 10 E 14 T",
