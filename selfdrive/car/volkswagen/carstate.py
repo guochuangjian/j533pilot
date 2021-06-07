@@ -14,6 +14,7 @@ class CarState(CarStateBase):
       self.shifter_values = can_define.dv["Getriebe_11"]['GE_Fahrstufe']
     elif CP.transmissionType == TransmissionType.direct:
       self.shifter_values = can_define.dv["EV_Gearshift"]['GearPosition']
+      self.hca_status_values = can_define.dv["LH_EPS_03"]["EPS_HCA_Status"]
     self.buttonStates = BUTTON_STATES.copy()
 
   def update(self, pt_cp, cam_cp, trans_type):
@@ -38,6 +39,11 @@ class CarState(CarStateBase):
     ret.steeringTorque = pt_cp.vl["LH_EPS_03"]['EPS_Lenkmoment'] * (1, -1)[int(pt_cp.vl["LH_EPS_03"]['EPS_VZ_Lenkmoment'])]
     ret.steeringPressed = abs(ret.steeringTorque) > CarControllerParams.STEER_DRIVER_ALLOWANCE
     ret.yawRate = pt_cp.vl["ESP_02"]['ESP_Gierrate'] * (1, -1)[int(pt_cp.vl["ESP_02"]['ESP_VZ_Gierrate'])] * CV.DEG_TO_RAD
+
+    # Verify EPS readiness to accept steering commands
+    hca_status = self.hca_status_values.get(pt_cp.vl["LH_EPS_03"]["EPS_HCA_Status"])
+    ret.steerError = hca_status in ["DISABLED", "FAULT"]
+    ret.steerWarning = hca_status in ["INITIALIZING", "REJECTED"]
 
     # Update gas, brakes, and gearshift.
     ret.gas = pt_cp.vl["Motor_20"]['MO_Fahrpedalrohwert_01'] / 100.0
@@ -83,8 +89,8 @@ class CarState(CarStateBase):
     # Refer to VW Self Study Program 890253: Volkswagen Driver Assist Systems,
     # pages 32-35.
     if self.CP.enableBsm:
-      ret.leftBlindspot = bool(pt_cp.vl["SWA_01"]["SWA_Infostufe_SWA_li"]) or bool(pt_cp.vl["SWA_01"]["SWA_Warnung_SWA_li"])
-      ret.rightBlindspot = bool(pt_cp.vl["SWA_01"]["SWA_Infostufe_SWA_re"]) or bool(pt_cp.vl["SWA_01"]["SWA_Warnung_SWA_re"])
+      ret.leftBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_li"]) or bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_li"])
+      ret.rightBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_re"]) or bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_re"])
 
     # Consume factory LDW data relevant for factory SWA (Lane Change Assist)
     # and capture it for forwarding to the blind spot radar controller
@@ -119,7 +125,7 @@ class CarState(CarStateBase):
 
     # Update ACC setpoint. When the setpoint is zero or there's an error, the
     # radar sends a set-speed of ~90.69 m/s / 203mph.
-    ret.cruiseState.speed = pt_cp.vl["ACC_02"]['ACC_Wunschgeschw'] * CV.KPH_TO_MS
+    ret.cruiseState.speed = ext_cp.vl["ACC_02"]['ACC_Wunschgeschw'] * CV.KPH_TO_MS
     if ret.cruiseState.speed > 90:
       ret.cruiseState.speed = 0
 
@@ -255,9 +261,11 @@ class CarState(CarStateBase):
     #Pon Autodetect J533 or comma camera can
     if CP.networkLocation == NetworkLocation.fwdCamera:
       # Extended CAN devices other than the camera are here on CANBUS.pt
-      # TODO: Add bsm checks[] when we have solid autodetection
-      signals += MqbExtraSignals.acc_radar[0] + MqbExtraSignals.bsm[0]
-      checks += MqbExtraSignals.acc_radar[1]
+      signals += MqbExtraSignals.fwd_radar_signals
+      checks += MqbExtraSignals.fwd_radar_checks
+      if CP.enableBsm:
+        signals += MqbExtraSignals.bsm_radar_signals
+        checks += MqbExtraSignals.bsm_radar_checks
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.pt)
 
@@ -275,44 +283,38 @@ class CarState(CarStateBase):
 
     checks = [
       # sig_address, frequency
-      ("LDW_02", 10)        # From R242 Driver assistance camera
+      # ("LDW_02", 10)        # From R242 Driver assistance camera
     ]
 
-    #Pon Autodetect J533 or comma camera can
     if CP.networkLocation == NetworkLocation.gateway:
       # Extended CAN devices other than the camera are here on CANBUS.cam
-      # TODO: Add bsm checks[] when we have solid autodetection
-      signals += MqbExtraSignals.acc_radar[0] + MqbExtraSignals.bsm[0]
-      checks += MqbExtraSignals.acc_radar[1]
+      signals += MqbExtraSignals.fwd_radar_signals
+      checks += MqbExtraSignals.fwd_radar_checks
+      if CP.enableBsm:
+        signals += MqbExtraSignals.bsm_radar_signals
+        checks += MqbExtraSignals.bsm_radar_checks
 
-    return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.cam)
+    # TODO: Re-enable checks enforcement with CP.enableStockCamera
+    return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.cam, enforce_checks=False)
 
-#Pon Autodetect J533 or comma camera can
 class MqbExtraSignals:
-  # Additional signal and message lists to dynamically add for optional or bus-portable controllers
-  acc_radar = ([
+  # Additional signal and message lists for optional or bus-portable controllers
+  fwd_radar_signals = [
     ("ACC_Wunschgeschw", "ACC_02", 0),              # ACC set speed
     ("AWV2_Freigabe", "ACC_10", 0),                 # FCW brake jerk release
     ("ANB_Teilbremsung_Freigabe", "ACC_10", 0),     # AEB partial braking release
     ("ANB_Zielbremsung_Freigabe", "ACC_10", 0),     # AEB target braking release
-  ], [
+  ]
+  fwd_radar_checks = [
     ("ACC_10", 50),                                 # From J428 ACC radar control module
     ("ACC_02", 17),                                 # From J428 ACC radar control module
-  ])
-  lkas_camera = ([
-    ("LDW_SW_Warnung_links", "LDW_02", 0),          # Blind spot in warning mode on left side due to lane departure
-    ("LDW_SW_Warnung_rechts", "LDW_02", 0),         # Blind spot in warning mode on right side due to lane departure
-    ("LDW_Seite_DLCTLC", "LDW_02", 0),              # Direction of most likely lane departure (left or right)
-    ("LDW_DLC", "LDW_02", 0),                       # Lane departure, distance to line crossing
-    ("LDW_TLC", "LDW_02", 0),                       # Lane departure, time to line crossing
-  ], [
-    ("LDW_02", 10),                                 # From R242 Driver assistance camera
-  ])
-  bsm = ([
+  ]
+  bsm_radar_signals = [
     ("SWA_Infostufe_SWA_li", "SWA_01", 0),          # Blind spot object info, left
     ("SWA_Warnung_SWA_li", "SWA_01", 0),            # Blind spot object warning, left
     ("SWA_Infostufe_SWA_re", "SWA_01", 0),          # Blind spot object info, right
     ("SWA_Warnung_SWA_re", "SWA_01", 0),            # Blind spot object warning, right
-  ], [
+  ]
+  bsm_radar_checks = [
     ("SWA_01", 20),                                 # From J1086 Lane Change Assist
-  ])
+  ]

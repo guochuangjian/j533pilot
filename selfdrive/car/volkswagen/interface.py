@@ -99,15 +99,30 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1335 + STD_CARGO_KG
       ret.wheelbase = 2.61
 
+    elif candidate == CAR.AUDI_Q2_MK1:
+      # Averages of all GA Q2 variants
+      ret.mass = 1205 + STD_CARGO_KG
+      ret.wheelbase = 2.61
+
     elif candidate == CAR.SEAT_ATECA_MK1:
       # Averages of all 5F Ateca variants
       ret.mass = 1900 + STD_CARGO_KG
+      ret.wheelbase = 2.64
+
+    elif candidate == CAR.SEAT_LEON_MK3:
+      # Averages of all 5F Leon variants
+      ret.mass = 1227 + STD_CARGO_KG
       ret.wheelbase = 2.64
 
     elif candidate == CAR.SKODA_KODIAQ_MK1:
       # Averages of all 5N Kodiaq variants
       ret.mass = 1569 + STD_CARGO_KG
       ret.wheelbase = 2.79
+
+    elif candidate == CAR.SKODA_OCTAVIA_MK3:
+      # Averages of all 5E/NE Octavia variants
+      ret.mass = 1388 + STD_CARGO_KG
+      ret.wheelbase = 2.68
 
     elif candidate == CAR.SKODA_SCALA_MK1:
       # Averages of all NW Scala variants
@@ -145,7 +160,7 @@ class CarInterface(CarInterfaceBase):
     self.cp.update_strings(can_strings)
     self.cp_cam.update_strings(can_strings)
 
-    ret = self.CS.update(self.cp, self.cp_cam, self.CP.transmissionType)
+    ret = self.CS.update(self.cp, self.cp_cam, self.cp_ext, self.CP.transmissionType)
     ret.canValid = self.cp.can_valid and self.cp_cam.can_valid
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
 
@@ -164,7 +179,7 @@ class CarInterface(CarInterfaceBase):
         be.pressed = self.CS.buttonStates[button]
         buttonEvents.append(be)
 
-    events = self.create_common_events(ret, extra_gears=[GearShifter.eco, GearShifter.sport])
+    events = self.create_common_events(ret, extra_gears=[GearShifter.eco, GearShifter.sport, GearShifter.manumatic])
 
     # Vehicle health and operation safety checks
     if self.CS.parkingBrakeSet:
