@@ -54,7 +54,6 @@ class CarInterface(CarInterfaceBase):
       else:  # We're hooked up at the LKAS camera
         ret.networkLocation = NetworkLocation.fwdCamera
       cloudlog.info("Detected network location: %s", ret.networkLocation)
-      ret.networkLocation = NetworkLocation.gateway
     # Global tuning defaults, can be overridden per-vehicle
 
     ret.steerRateCost = 1.0
